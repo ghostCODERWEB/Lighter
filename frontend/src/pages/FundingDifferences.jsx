@@ -661,33 +661,35 @@ export default function FundingDifferences() {
                                             {g.symbol}
                                         </div>
 
-                                        <div className="mt-2 grid grid-cols-2 gap-2">
+                                        <div className="my-4 flex flex-col md:flex-row gap-3">
                                             {/* SHORT */}
-                                            <div className="flex flex-col rounded-xl border border-gray-200 dark:border-gray-700 bg-gray-50 dark:bg-gray-800/40 p-2.5 sm:p-3">
-                                                <div className="text-[10px] sm:text-[11px] uppercase tracking-wide text-gray-500">
+                                            <div className="flex-1 flex flex-col rounded-2xl border border-gray-700/60 bg-gray-800/40 px-4 py-3">
+                                                <div className="text-[10px] uppercase tracking-wide text-gray-400">
                                                     short on
                                                 </div>
-                                                <div className="font-mono text-[11px] sm:text-sm font-semibold truncate">
+                                                <div className="font-mono text-sm font-semibold">
                                                     {String(g.best?.exchange).toLowerCase()}
                                                 </div>
-                                                <div className="text-[10px] sm:text-[12px] text-gray-500">
+                                                <div className="text-[11px] text-gray-400">
                                                     {fmt.pct4(g.best?.rate)}/h
                                                 </div>
                                             </div>
 
                                             {/* LONG */}
-                                            <div className="flex flex-col rounded-xl border border-gray-200 dark:border-gray-700 bg-gray-50 dark:bg-gray-800/40 p-2.5 sm:p-3">
-                                                <div className="text-[10px] sm:text-[11px] uppercase tracking-wide text-gray-500">
+                                            <div className="flex-1 flex flex-col rounded-2xl border border-gray-700/60 bg-gray-800/40 px-4 py-3">
+                                                <div className="text-[10px] uppercase tracking-wide text-gray-400">
                                                     long on
                                                 </div>
-                                                <div className="font-mono text-[11px] sm:text-sm font-semibold truncate">
+                                                <div className="font-mono text-sm font-semibold">
                                                     {String(g.worst?.exchange).toLowerCase()}
                                                 </div>
-                                                <div className="text-[10px] sm:text-[12px] text-gray-500">
+                                                <div className="text-[11px] text-gray-400">
                                                     {fmt.pct4(g.worst?.rate)}/h
                                                 </div>
                                             </div>
                                         </div>
+
+
 
                                         <div className="mt-2 space-y-0.5 text-[10px] sm:text-[12px] text-gray-600 dark:text-gray-400">
                                             <div className="flex flex-wrap items-center gap-2">
