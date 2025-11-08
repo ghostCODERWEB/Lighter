@@ -769,12 +769,12 @@ export default function FundingDifferences() {
                             }}
                         >
                             {/* Header row */}
-                            <div className="hidden md:grid grid-cols-[1.8fr,2.1fr,1.2fr,1.1fr,1.1fr] gap-2 px-4 py-2.5 text-[9px] font-medium uppercase tracking-[0.14em] text-slate-300 bg-slate-800 border-b border-slate-500/30">
+                            <div className="hidden md:grid grid-cols-[2.9fr,2.1fr,1.2fr,1.1fr] gap-2 px-4 py-2.5 text-[9px] font-medium uppercase tracking-[0.14em] text-slate-300 bg-slate-800 border-b border-slate-500/30">
                                 <div>Ticker / exchanges (4)</div>
                                 <div>(short / long)</div>
                                 <div>Spread APR</div>
                                 <div>Spread /h</div>
-                                <div>Range</div>
+                                {/* <div>Range</div> */}
                             </div>
 
                             {/* Rows */}
@@ -790,7 +790,7 @@ export default function FundingDifferences() {
                                         className="group border-t border-slate-600/30 last:border-b last:rounded-b-2xl hover:bg-slate-700/60 transition-colors"
                                     >
                                         {/* Desktop layout */}
-                                        <div className="hidden md:grid grid-cols-[1.8fr,2.1fr,1.2fr,1.1fr,1.1fr] gap-2 px-4 py-2.5 text-[10px] items-center">
+                                        <div className="hidden md:grid grid-cols-[2.9fr,2.1fr,1.2fr,1.1fr] gap-2 px-4 py-2.5 text-[10px] items-center">
                                             {/* Symbol + inline exchanges (reserve up to 4) */}
                                             <div className="flex flex-col">
                                                 <button
@@ -856,7 +856,7 @@ export default function FundingDifferences() {
                                             </div>
 
                                             {/* Range + bar */}
-                                            <div className="flex flex-col gap-1">
+                                            {/* <div className="flex flex-col gap-1">
                                                 <ZeroAnchorBar
                                                     min={g.min}
                                                     max={g.max}
@@ -870,7 +870,7 @@ export default function FundingDifferences() {
                                                         {fmt.pct4(g.max)}/h
                                                     </span>
                                                 </div>
-                                            </div>
+                                            </div> */}
                                         </div>
 
                                         {/* Mobile stacked layout */}
