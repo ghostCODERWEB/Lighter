@@ -5,12 +5,32 @@ export default {
     theme: {
         extend: {
             fontFamily: {
-                inter: ['Inter', 'system-ui', 'sans-serif'],
+                sans: [
+                    "Inter",
+                    "system-ui",
+                    "-apple-system",
+                    "BlinkMacSystemFont",
+                    "SF Pro Text",
+                    "Segoe UI",
+                    "sans-serif",
+                ],
+                mono: [
+                    "JetBrains Mono",
+                    "SFMono-Regular",
+                    "Menlo",
+                    "Monaco",
+                    "Consolas",
+                    "Liberation Mono",
+                    "Courier New",
+                    "monospace",
+                ],
             },
             container: {
                 center: true,
                 padding: "1rem",
-                screens: { lg: "1200px" }, // your 1200px desktop container
+                screens: {
+                    lg: "1200px",
+                },
             },
         },
     },

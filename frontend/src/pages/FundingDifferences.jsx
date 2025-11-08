@@ -583,10 +583,6 @@ export default function FundingDifferences() {
     return (
         <div
             className="max-w-[1440px] mx-auto px-3 sm:px-4 md:px-6 lg:px-8 py-4 sm:py-6 text-slate-50"
-            style={{
-                fontFamily:
-                    "system-ui, -apple-system, BlinkMacSystemFont, 'SF Pro Text', 'Segoe UI', sans-serif",
-            }}
         >
             {/* Header */}
             <motion.div
