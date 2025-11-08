@@ -673,30 +673,58 @@ export default function FundingDifferences() {
                         </div>
 
                         {/* View toggle */}
-                        <div className="inline-flex items-center rounded-xl border border-slate-500/50 bg-slate-800/90 p-0.5">
+
+                        <div className="relative inline-flex items-center rounded-xl border border-slate-500/50 bg-slate-800/90 p-0.5">
+                            {/* List */}
                             <button
                                 onClick={() => setViewMode("list")}
-                                className={
-                                    "px-2.5 py-1.5 text-[9px] sm:text-[10px] rounded-lg " +
-                                    (viewMode === "list"
-                                        ? "bg-emerald-400 text-slate-900 font-semibold"
-                                        : "text-slate-300 hover:bg-slate-700")
-                                }
+                                className="relative px-2.5 py-1.5 text-[9px] sm:text-[10px] rounded-lg flex-1 text-center"
                             >
-                                List
+                                {viewMode === "list" && (
+                                    <motion.div
+                                        layoutId="viewModePill"
+                                        className="absolute inset-0 rounded-lg bg-emerald-400"
+                                        transition={{ type: "spring", stiffness: 260, damping: 24 }}
+                                    />
+                                )}
+                                <span
+                                    className={
+                                        "relative z-10 transition-colors " +
+                                        (viewMode === "list"
+                                            ? "text-slate-900 font-semibold"
+                                            : "text-slate-300")
+                                    }
+                                >
+                                    List
+                                </span>
                             </button>
+
+                            {/* Cards */}
                             <button
                                 onClick={() => setViewMode("cards")}
-                                className={
-                                    "px-2.5 py-1.5 text-[9px] sm:text-[10px] rounded-lg " +
-                                    (viewMode === "cards"
-                                        ? "bg-emerald-400 text-slate-900 font-semibold"
-                                        : "text-slate-300 hover:bg-slate-700")
-                                }
+                                className="relative px-2.5 py-1.5 text-[9px] sm:text-[10px] rounded-lg flex-1 text-center"
                             >
-                                Cards
+                                {viewMode === "cards" && (
+                                    <motion.div
+                                        layoutId="viewModePill"
+                                        className="absolute inset-0 rounded-lg bg-emerald-400"
+                                        transition={{ type: "spring", stiffness: 260, damping: 24 }}
+                                    />
+                                )}
+                                <span
+                                    className={
+                                        "relative z-10 transition-colors " +
+                                        (viewMode === "cards"
+                                            ? "text-slate-900 font-semibold"
+                                            : "text-slate-300")
+                                    }
+                                >
+                                    Cards
+                                </span>
                             </button>
                         </div>
+
+
                     </div>
                 </div>
 
