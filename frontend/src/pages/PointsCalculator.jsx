@@ -312,7 +312,7 @@ function NextDistribution({ todayUTC }) {
             </div>
             <div className="mt-1 h-2 w-full rounded-full bg-gray-200 dark:bg-gray-700 overflow-hidden">
                 <div
-                    className="h-full bg-blue-500/70"
+                    className="h-full bg-emerald-400"
                     style={{
                         width: `${(progress * 100).toFixed(0)
                             }%`,
@@ -372,7 +372,7 @@ function NumberField({ label, value, onChange }) {
                 onChange={(e) =>
                     onChange(e.target.value)
                 }
-                className="rounded-xl border border-gray-300 dark:border-gray-600 bg-white/60 dark:bg-gray-900/40 px-3 py-2 outline-none focus:ring-2 focus:ring-blue-500"
+                className="rounded-xl border border-gray-300 dark:border-gray-600 bg-white/60 dark:bg-gray-900/40 px-3 py-2 outline-none focus:ring-2 focus:ring-emerald-500"
                 style={{
                     fontFamily:
                         "system-ui, -apple-system, BlinkMacSystemFont, 'SF Pro Text', 'Segoe UI', sans-serif",
@@ -411,7 +411,7 @@ function SliderField({
                 onChange={(e) =>
                     onChange(Number(e.target.value))
                 }
-                className="accent-blue-600"
+                className="accent-emerald-400"
             />
         </label>
     );

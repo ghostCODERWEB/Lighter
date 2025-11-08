@@ -133,7 +133,7 @@ export default function Header() {
                 <motion.div
                   key="underline-anchor"
                   layoutId="nav-underline"
-                  className="absolute bottom-0 h-[2px] rounded-full bg-blue-500/70"
+                  className="absolute bottom-0 h-[2px] rounded-full bg-emerald-500/70"
                   initial={false}
                   transition={{ type: "tween", ease: "easeOut", duration: 0.18 }}
                   style={{ opacity: 0 }}
@@ -155,8 +155,8 @@ export default function Header() {
                       to={item.to}
                       className={({ isActive }) =>
                         `${baseLinkCls} ${isActive
-                          ? "text-blue-700 dark:text-blue-300"
-                          : "text-gray-600 dark:text-gray-300 hover:text-blue-600 dark:hover:text-blue-400"
+                          ? "text-emerald-700 dark:text-emerald-300"
+                          : "text-gray-600 dark:text-gray-300 hover:text-blue-600 dark:hover:text-emerald-400"
                         }`
                       }
                     >
@@ -166,7 +166,7 @@ export default function Header() {
                           {isActive && (
                             <motion.span
                               layoutId="nav-underline"
-                              className="absolute -bottom-1 left-1 right-1 h-[2px] rounded-full bg-blue-500/80"
+                                className="absolute -bottom-1 left-1 right-1 h-[2px] rounded-full bg-emerald-500/80"
                               transition={{ type: "tween", ease: "easeOut", duration: 0.18 }}
                             />
                           )}
