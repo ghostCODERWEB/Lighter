@@ -38,7 +38,7 @@ const fmt = {
 /* ---------- annualization helpers ---------- */
 const HOURS_PER_DAY = 24;
 const DAYS_PER_YEAR = 365;
-const HOURS_PER_YEAR = HOURS_PER_DAY * DAYS_PER_YEAR; // 8760
+const HOURS_PER_YEAR = HOURS_PER_DAY * DAYS_PER_YEAR;
 const annualizeSimple = (hourly) => hourly * HOURS_PER_YEAR;
 
 /* ---------- normalize to HOURLY funding ---------- */
@@ -86,13 +86,13 @@ const FETCH_OPTS = {
 /* ---------- tiny UI bits ---------- */
 function ZeroAnchorBar({ min, max }) {
     if (!Number.isFinite(min) || !Number.isFinite(max) || max === min) {
-        return <div className="h-2 rounded bg-gray-200 dark:bg-gray-700" />;
+        return <div className="h-1.5 rounded bg-slate-500/40" />;
     }
     const ratio = clamp(-min / (max - min));
     return (
-        <div className="relative h-2 rounded bg-gray-200 dark:bg-gray-700 overflow-hidden">
+        <div className="relative h-1.5 rounded bg-slate-500/30 overflow-hidden">
             <div
-                className="absolute top-0 bottom-0 w-0.5 bg-gray-500/60"
+                className="absolute top-0 bottom-0 w-0.5 bg-slate-700"
                 style={{ left: `${ratio * 100}%` }}
                 title="0% anchor"
             />
@@ -104,12 +104,12 @@ function RateChip({ exchange, rate }) {
     const positive = Number.isFinite(rate) && rate > 0;
     const negative = Number.isFinite(rate) && rate < 0;
     const base =
-        "inline-flex items-center gap-1 px-1.5 py-0.5 rounded-md border text-[9px] sm:text-[10px] font-mono";
+        "inline-flex items-center gap-1 px-1.5 py-0.5 rounded-md border text-[9px] sm:text-[10px] font-mono leading-none";
     const cls = negative
-        ? `${base} border-rose-300/40 bg-rose-50 text-rose-700 dark:border-rose-400/30 dark:bg-rose-900/20 dark:text-rose-300`
+        ? `${base} border-rose-400/60 bg-rose-900/10 text-rose-200`
         : positive
-            ? `${base} border-emerald-300/40 bg-emerald-50 text-emerald-700 dark:border-emerald-400/30 dark:bg-emerald-900/20 dark:text-emerald-300`
-            : `${base} border-gray-300/40 bg-gray-50 text-gray-600 dark:border-gray-600 dark:bg-gray-800/60 dark:text-gray-300`;
+            ? `${base} border-emerald-400/60 bg-emerald-900/5 text-emerald-200`
+            : `${base} border-slate-400/40 bg-slate-700/40 text-slate-100`;
     return (
         <span
             className={cls}
@@ -120,6 +120,37 @@ function RateChip({ exchange, rate }) {
             </span>
             <span>· {fmt.pct4(rate)}/h</span>
         </span>
+    );
+}
+
+/* compact 4-slot exchange block used in LIST view */
+function ExchangeSlots({ items, max = 4 }) {
+    const slots = items.slice(0, max);
+    while (slots.length < max) slots.push(null);
+
+    return (
+        <div className="grid grid-cols-4 gap-1.25 mt-1">
+            {slots.map((it, idx) =>
+                it ? (
+                    <div
+                        key={idx}
+                        className="flex flex-col px-1.5 py-1 rounded-md bg-slate-700/70 border border-slate-500/40"
+                    >
+                        <span className="font-mono text-[9px] text-slate-100 mt-0.5 leading-tight">
+                            {String(it.exchange).toLowerCase()}
+                        </span>
+                        <span className="font-mono text-[8px] text-emerald-300 mt-0.5 leading-tight">
+                            {fmt.pct4(it.rate)}/h
+                        </span>
+                    </div>
+                ) : (
+                    <div
+                        key={idx}
+                        className="rounded-md bg-slate-700/30 border border-slate-500/20"
+                    />
+                )
+            )}
+        </div>
     );
 }
 
@@ -137,47 +168,47 @@ function ArbPanel({ symbol, best, worst, spread }) {
     const apySimple = annualizeSimple(hourlyGross);
 
     return (
-        <div className="mt-3 rounded-xl border border-emerald-300/40 bg-emerald-50/60 dark:border-emerald-400/30 dark:bg-emerald-900/10 p-3 text-sm">
-            <div className="flex items-center gap-2 font-semibold text-emerald-800 dark:text-emerald-200">
+        <div className="mt-3 rounded-2xl border border-emerald-400/40 bg-slate-800/95 p-3 text-sm text-slate-50">
+            <div className="flex items-center gap-2 font-semibold text-emerald-300">
                 <Percent className="h-4 w-4" />
                 Delta-neutral funding capture (LIGHTER ↔ other)
             </div>
 
-            <div className="mt-2 grid grid-cols-1 sm:grid-cols-3 gap-2">
-                <div className="rounded-lg border border-gray-200 dark:border-gray-700 p-2">
-                    <div className="text-[11px] uppercase tracking-wide text-gray-500">
+            <div className="mt-3 grid grid-cols-1 sm:grid-cols-3 gap-2">
+                <div className="rounded-xl border border-slate-500/60 bg-slate-800/90 p-2">
+                    <div className="text-[10px] uppercase tracking-wide text-slate-300">
                         hourly (gross)
                     </div>
                     <div className="text-lg font-bold font-mono">
                         {fmt.pct4(hourlyGross)}
                     </div>
-                    <div className="text-[12px] text-gray-500">
+                    <div className="text-[11px] text-slate-300">
                         daily ≈ {fmt.pct4(dailyGross)}
                     </div>
                 </div>
-                <div className="rounded-lg border border-gray-200 dark:border-gray-700 p-2">
-                    <div className="text-[11px] uppercase tracking-wide text-gray-500">
+                <div className="rounded-xl border border-slate-500/60 bg-slate-800/90 p-2">
+                    <div className="text-[10px] uppercase tracking-wide text-slate-300">
                         annualized (simple)
                     </div>
                     <div className="text-sm">
                         APY ~{" "}
-                        <span className="font-mono font-semibold">
+                        <span className="font-mono font-semibold text-emerald-300">
                             {fmt.pct2(apySimple)}
                         </span>
                     </div>
                 </div>
-                <div className="rounded-lg border border-gray-200 dark:border-gray-700 p-2">
-                    <div className="text-[11px] uppercase tracking-wide text-gray-500">
+                <div className="rounded-xl border border-slate-500/60 bg-slate-800/90 p-2">
+                    <div className="text-[10px] uppercase tracking-wide text-slate-300">
                         legs
                     </div>
-                    <div className="text-sm">
+                    <div className="text-[11px]">
                         <span className="font-semibold">short</span> on{" "}
                         <span className="font-mono">
                             {String(best?.exchange).toLowerCase()}
                         </span>{" "}
                         ({fmt.pct4(best?.rate)}/h)
                     </div>
-                    <div className="text-sm">
+                    <div className="text-[11px]">
                         <span className="font-semibold">long</span> on{" "}
                         <span className="font-mono">
                             {String(worst?.exchange).toLowerCase()}
@@ -187,30 +218,34 @@ function ArbPanel({ symbol, best, worst, spread }) {
                 </div>
             </div>
 
-            <div className="mt-3 rounded-lg bg-white/70 dark:bg-gray-800/60 border border-gray-200 dark:border-gray-700 p-2">
+            <div className="mt-3 rounded-xl border border-slate-500/50 bg-slate-800/95 p-2">
                 <div className="flex items-start gap-2">
-                    <Calculator className="h-4 w-4 mt-0.5" />
-                    <div className="text-[13px] leading-relaxed">
-                        <div className="font-semibold">execution</div>
-                        <ul className="list-disc pl-5 mt-1 space-y-0.5">
+                    <Calculator className="h-4 w-4 mt-0.5 text-slate-300" />
+                    <div className="text-[12px] leading-relaxed text-slate-100">
+                        <div className="font-semibold">
+                            execution
+                        </div>
+                        <ul className="list-disc pl-4 mt-1 space-y-0.5">
                             <li>
-                                <span className="font-mono">short {symbol}</span> perp on{" "}
-                                <span className="font-semibold">
+                                short {symbol} perp on{" "}
+                                <span className="font-mono">
                                     {String(best?.exchange).toLowerCase()}
                                 </span>{" "}
-                                (rate {fmt.pct4(best?.rate)}/h → {describeLeg(best?.rate)}).
+                                ({fmt.pct4(best?.rate)}/h,{" "}
+                                {describeLeg(best?.rate)}).
                             </li>
                             <li>
-                                <span className="font-mono">long {symbol}</span> perp on{" "}
-                                <span className="font-semibold">
+                                long {symbol} perp on{" "}
+                                <span className="font-mono">
                                     {String(worst?.exchange).toLowerCase()}
                                 </span>{" "}
-                                (rate {fmt.pct4(worst?.rate)}/h → {describeLeg(worst?.rate)}).
+                                ({fmt.pct4(worst?.rate)}/h,{" "}
+                                {describeLeg(worst?.rate)}).
                             </li>
                         </ul>
-                        <div className="text-[12px] text-gray-500 mt-2">
+                        <div className="text-[10px] text-slate-300 mt-2">
                             Net (gross) ≈ high − low = {fmt.pct4(hourlyGross)}/h.
-                            Results ignore schedule misalignments and basis risk.
+                            Funding schedule, index drift and basis risk are ignored.
                         </div>
                     </div>
                 </div>
@@ -218,6 +253,44 @@ function ArbPanel({ symbol, best, worst, spread }) {
         </div>
     );
 }
+
+/* ---------- helpers ---------- */
+const spreadBadge = (v, labelClass = "") => {
+    if (!Number.isFinite(v)) {
+        return (
+            <span className={`px-2 py-1 rounded-md text-[10px] ${labelClass}`}>
+                —
+            </span>
+        );
+    }
+    const positive = v > 0;
+    const negative = v < 0;
+    const base =
+        "px-2 py-1 rounded-md text-[10px] font-semibold font-mono inline-flex justify-center min-w-[64px]";
+    if (positive)
+        return (
+            <span
+                className={`${base} bg-emerald-700/50 text-emerald-100 border border-emerald-400/70 ${labelClass}`}
+            >
+                {fmt.pct2(v)}
+            </span>
+        );
+    if (negative)
+        return (
+            <span
+                className={`${base} bg-rose-700/50 text-rose-100 border border-rose-400/70 ${labelClass}`}
+            >
+                {fmt.pct2(v)}
+            </span>
+        );
+    return (
+        <span
+            className={`${base} bg-slate-700/60 text-slate-50 border border-slate-400/70 ${labelClass}`}
+        >
+            {fmt.pct2(v)}
+        </span>
+    );
+};
 
 /* ---------- main ---------- */
 export default function FundingDifferences() {
@@ -229,10 +302,11 @@ export default function FundingDifferences() {
     const [data, setData] = useState([]);
     const [openCards, setOpenCards] = useState(() => new Set());
     const [activeGroup, setActiveGroup] = useState(null);
+    const [viewMode, setViewMode] = useState("list"); // default: list
 
     const SORT_OPTS = [
         { key: "spread", label: "Spread (Δ/h)" },
-        { key: "apy", label: "APY (simple)" },
+        { key: "apy", label: "Spread APY" },
         { key: "symbol", label: "Symbol" },
         { key: "max", label: "Max rate" },
         { key: "min", label: "Min rate" },
@@ -266,7 +340,6 @@ export default function FundingDifferences() {
         []
     );
 
-    // initial + background refresh
     useEffect(() => {
         let mounted = true;
         fetchFunding(true);
@@ -331,7 +404,8 @@ export default function FundingDifferences() {
             let bestPair = null;
 
             for (const it of items) {
-                if (String(it.exchange || "").toUpperCase() === "LIGHTER") continue;
+                if (String(it.exchange || "").toUpperCase() === "LIGHTER")
+                    continue;
 
                 const rO = toNum(it.rate);
                 if (!Number.isFinite(rO)) continue;
@@ -479,132 +553,193 @@ export default function FundingDifferences() {
     const toggleSortDir = () =>
         setSortDir((d) => (d === "asc" ? "desc" : "asc"));
 
+    function FixedRateChipRow({ items, max = 4 }) {
+        const visible = items.slice(0, max);
+        const missing = Math.max(0, max - visible.length);
+
+        return (
+            <div className="flex flex-wrap gap-1 min-h-[22px]">
+                {visible.map((it) => (
+                    <RateChip
+                        key={String(it.exchange) + String(it.market_id)}
+                        exchange={it.exchange}
+                        rate={it.rate}
+                    />
+                ))}
+
+                {/* invisible placeholders to reserve space up to 4 chips */}
+                {Array.from({ length: missing }).map((_, i) => (
+                    <div
+                        key={`ph-${i}`}
+                        className="opacity-0 pointer-events-none"
+                    >
+                        <RateChip exchange="placeholder" rate={0} />
+                    </div>
+                ))}
+            </div>
+        );
+    }
+
     return (
-        <div className="max-w-[1280px] mx-auto px-3 sm:px-4 md:px-6 lg:px-8 py-4 sm:py-6 text-gray-900 dark:text-gray-100">
-            {/* Header + filters */}
+        <div
+            className="max-w-[1440px] mx-auto px-3 sm:px-4 md:px-6 lg:px-8 py-4 sm:py-6 text-slate-50"
+            style={{
+                fontFamily:
+                    "system-ui, -apple-system, BlinkMacSystemFont, 'SF Pro Text', 'Segoe UI', sans-serif",
+            }}
+        >
+            {/* Header */}
             <motion.div
-                className="mb-4 rounded-2xl border border-gray-200 dark:border-gray-700 bg-white dark:bg-gray-800 p-3 sm:p-4 shadow-sm"
+                className="mb-4 rounded-2xl border border-slate-400/20 bg-slate-800/90 p-3 sm:p-4 shadow-[0_16px_32px_rgba(15,23,42,0.35)]"
                 initial={{ opacity: 0, y: -6 }}
                 animate={{ opacity: 1, y: 0 }}
-                transition={{ duration: 0.25 }}
+                transition={{ duration: 0.24 }}
             >
-                <div className="flex flex-wrap items-center gap-2 text-base font-semibold">
-                    <TrendingUp className="h-4 w-4" />
-                    Lighter Perp Funding Arbitrage
-                    <span className="text-xs text-gray-500 ml-1">
+                <div className="flex flex-wrap items-center gap-2 text-base sm:text-lg font-semibold tracking-tight">
+                    <span className="inline-flex items-center gap-1.5">
+                        <TrendingUp className="h-4 w-4 text-emerald-400" />
+                        <span>Lighter perp funding</span>
+                    </span>
+                    <span className="text-[10px] text-slate-300">
                         ({totalSymbols})
                     </span>
                     {refreshing && (
-                        <span
-                            className="ml-2 inline-flex items-center gap-2 text-[11px] text-emerald-600 dark:text-emerald-300"
-                            aria-live="polite"
-                        >
-                            <span className="h-3 w-3 rounded-full border-2 border-emerald-500 border-t-transparent animate-spin" />
+                        <span className="ml-1 inline-flex items-center gap-1 text-[10px] text-emerald-300">
+                            <span className="h-2.5 w-2.5 rounded-full border-2 border-emerald-300 border-t-transparent animate-spin" />
                             updating
                         </span>
                     )}
                     <button
-                        className="ml-auto inline-flex items-center gap-1 rounded-lg border border-gray-300 dark:border-gray-600 px-2 py-1 text-[12px] hover:bg-gray-50 dark:hover:bg-gray-700"
+                        className="ml-auto inline-flex items-center gap-1 rounded-xl border border-slate-500/70 bg-slate-800/90 px-2.5 py-1.5 text-[10px] text-slate-50 hover:bg-slate-700"
                         onClick={() => fetchFunding(false)}
-                        title="Refresh data"
                     >
                         <RefreshCcw className="h-3.5 w-3.5" />
                         Refresh
                     </button>
                 </div>
 
-                <div className="mt-1 text-[11px] text-gray-500">
-                    Normalized to <span className="font-semibold">per-hour</span>.
-                    Only pairs <span className="font-semibold">lighter</span> ↔ other
-                    exchanges are considered.
+                <div className="mt-1 text-[10px] text-slate-300">
+                    Rates normalized to <span className="font-semibold">per-hour</span>, comparing{" "}
+                    <span className="font-semibold">LIGHTER</span> vs other exchanges.
                 </div>
 
-                <div className="mt-3 grid grid-cols-1 lg:grid-cols-4 gap-2 lg:items-center">
-                    <div className="lg:col-span-2 flex items-center gap-2 rounded-xl border border-gray-300 dark:border-gray-700 bg-gray-50 dark:bg-gray-900 px-2 sm:px-3">
-                        <Search className="h-4 w-4 shrink-0" />
+                {/* Controls */}
+                <div className="mt-3 grid grid-cols-1 lg:grid-cols-[minmax(0,2.6fr)_auto_auto] gap-2 lg:items-center">
+                    {/* Search */}
+                    <div className="flex items-center gap-2 rounded-xl border border-slate-500/40 bg-slate-800 px-2 sm:px-3">
+                        <Search className="h-3.5 w-3.5 text-slate-400 shrink-0" />
                         <input
-                            className="h-11 flex-1 bg-transparent text-sm outline-none min-w-0"
-                            placeholder="Find coin by ticker (e.g. BTC, ETH, TAO)"
+                            className="h-9 sm:h-10 flex-1 bg-transparent text-[11px] sm:text-sm text-slate-50 placeholder:text-slate-400 outline-none min-w-0"
+                            placeholder="Search symbol (BTC, ETH, TAO...)"
                             value={query}
                             onChange={(e) => setQuery(e.target.value)}
                         />
                     </div>
 
-                    <label className="inline-flex items-center gap-2 text-sm">
+                    {/* Hide zeros */}
+                    <label className="inline-flex items-center gap-2 text-[10px] sm:text-[11px] text-slate-200">
                         <input
                             type="checkbox"
-                            className="h-4 w-4"
+                            className="h-3.5 w-3.5 rounded border-slate-400 bg-slate-800"
                             checked={hideZeros}
                             onChange={(e) => setHideZeros(e.target.checked)}
                         />
-                        hide 0% rates
+                        hide 0% markets
                     </label>
 
-                    <div className="flex items-center gap-2">
-                        <select
-                            className="h-11 flex-1 rounded-xl border border-gray-300 dark:border-gray-700 bg-gray-50 dark:bg-gray-900 px-3 text-sm"
-                            value={sortKey}
-                            onChange={(e) => setSortKey(e.target.value)}
-                            title="Sort by"
-                        >
-                            {SORT_OPTS.map((o) => (
-                                <option key={o.key} value={o.key}>
-                                    {o.label}
-                                </option>
-                            ))}
-                        </select>
-                        <button
-                            className="inline-flex items-center gap-1 rounded-xl border border-gray-300 dark:border-gray-700 bg-gray-50 dark:bg-gray-900 px-3 h-11 text-sm hover:bg-gray-100 dark:hover:bg-gray-800"
-                            onClick={toggleSortDir}
-                            title="Toggle sort direction"
-                        >
-                            {sortDir === "asc" ? (
-                                <ArrowUpNarrowWide className="h-4 w-4" />
-                            ) : (
-                                <ArrowDownNarrowWide className="h-4 w-4" />
-                            )}
-                            {sortDir}
-                        </button>
+                    {/* Sort + View */}
+                    <div className="flex flex-wrap items-center justify-end gap-2">
+                        <div className="flex items-center gap-1.5">
+                            <select
+                                className="h-8 sm:h-9 rounded-xl border border-slate-500/50 bg-slate-800/90 px-2 text-[9px] sm:text-[11px] text-slate-50"
+                                value={sortKey}
+                                onChange={(e) => setSortKey(e.target.value)}
+                                title="Sort by"
+                            >
+                                {SORT_OPTS.map((o) => (
+                                    <option key={o.key} value={o.key}>
+                                        {o.label}
+                                    </option>
+                                ))}
+                            </select>
+                            <button
+                                className="inline-flex items-center gap-1 rounded-xl border border-slate-500/50 bg-slate-800/90 px-2 h-8 sm:h-9 text-[9px] sm:text-[11px] text-slate-50 hover:bg-slate-700"
+                                onClick={toggleSortDir}
+                                title="Toggle sort direction"
+                            >
+                                {sortDir === "asc" ? (
+                                    <ArrowUpNarrowWide className="h-3 w-3" />
+                                ) : (
+                                    <ArrowDownNarrowWide className="h-3 w-3" />
+                                )}
+                                {sortDir}
+                            </button>
+                        </div>
+
+                        {/* View toggle */}
+                        <div className="inline-flex items-center rounded-xl border border-slate-500/50 bg-slate-800/90 p-0.5">
+                            <button
+                                onClick={() => setViewMode("list")}
+                                className={
+                                    "px-2.5 py-1.5 text-[9px] sm:text-[10px] rounded-lg " +
+                                    (viewMode === "list"
+                                        ? "bg-emerald-400 text-slate-900 font-semibold"
+                                        : "text-slate-300 hover:bg-slate-700")
+                                }
+                            >
+                                List
+                            </button>
+                            <button
+                                onClick={() => setViewMode("cards")}
+                                className={
+                                    "px-2.5 py-1.5 text-[9px] sm:text-[10px] rounded-lg " +
+                                    (viewMode === "cards"
+                                        ? "bg-emerald-400 text-slate-900 font-semibold"
+                                        : "text-slate-300 hover:bg-slate-700")
+                                }
+                            >
+                                Cards
+                            </button>
+                        </div>
                     </div>
                 </div>
 
+                {/* Summary + error */}
                 {error && (
-                    <div className="mt-2 text-sm text-rose-600 dark:text-rose-400 flex items-center gap-2">
-                        <Info className="h-4 w-4" />
+                    <div className="mt-2 text-[11px] text-rose-300 flex items-center gap-1.5">
+                        <Info className="h-3.5 w-3.5" />
                         {error}
                     </div>
                 )}
 
-                {/* quick summary */}
-                <div className="mt-3 grid grid-cols-2 sm:grid-cols-5 gap-2 text-[12px] text-gray-500">
-                    <div className="rounded-lg border border-gray-200 dark:border-gray-700 p-2">
-                        symbols{" "}
-                        <span className="font-mono font-semibold text-gray-700 dark:text-gray-200">
+                <div className="mt-3 grid grid-cols-2 sm:grid-cols-5 gap-2 text-[9px] sm:text-[10px] text-slate-200">
+                    <div className="rounded-lg border border-slate-500/40 bg-slate-800 p-2 flex justify-between">
+                        <span>symbols</span>
+                        <span className="font-mono text-slate-50">
                             {summary.total}
                         </span>
                     </div>
-                    <div className="rounded-lg border border-gray-200 dark:border-gray-700 p-2">
-                        exchanges{" "}
-                        <span className="font-mono font-semibold text-gray-700 dark:text-gray-200">
+                    <div className="rounded-lg border border-slate-500/40 bg-slate-800 p-2 flex justify-between">
+                        <span>exchanges</span>
+                        <span className="font-mono text-slate-50">
                             {summary.exchanges}
                         </span>
                     </div>
-                    <div className="rounded-lg border border-gray-200 dark:border-gray-700 p-2">
-                        avg spread{" "}
-                        <span className="font-mono font-semibold text-gray-700 dark:text-gray-200">
+                    <div className="rounded-lg border border-slate-500/40 bg-slate-800 p-2 flex justify-between">
+                        <span>avg spread /h</span>
+                        <span className="font-mono text-emerald-300">
                             {fmt.pct3(summary.avgSpread)}
                         </span>
-                        /h
                     </div>
-                    <div className="rounded-lg border border-gray-200 dark:border-gray-700 p-2">
-                        all-neg{" "}
-                        <span className="font-mono font-semibold text-gray-700 dark:text-gray-200">
+                    <div className="rounded-lg border border-slate-500/40 bg-slate-800 p-2 flex justify-between">
+                        <span>all-neg</span>
+                        <span className="font-mono text-slate-50">
                             {summary.allNeg}
                         </span>
                     </div>
-                    <div className="rounded-lg border border-gray-200 dark:border-gray-700 p-2">
-                        all-pos{" "}
-                        <span className="font-mono font-semibold text-gray-700 dark:text-gray-200">
+                    <div className="rounded-lg border border-slate-500/40 bg-slate-800 p-2 flex justify-between">
+                        <span>all-pos</span>
+                        <span className="font-mono text-slate-50">
                             {summary.allPos}
                         </span>
                     </div>
@@ -613,172 +748,334 @@ export default function FundingDifferences() {
 
             {/* Content */}
             {initialLoading && (
-                <div className="rounded-xl border border-gray-200 dark:border-gray-700 bg-white dark:bg-gray-800 p-6 text-center text-gray-500">
+                <div className="rounded-2xl border border-slate-500/40 bg-slate-800/90 p-6 text-center text-slate-200">
                     Loading…
                 </div>
             )}
 
             {!initialLoading && totalSymbols === 0 && (
-                <div className="rounded-xl border border-gray-200 dark:border-gray-700 bg-white dark:bg-gray-800 p-6 text-center text-gray-500">
-                    No symbols match.
+                <div className="rounded-2xl border border-slate-500/40 bg-slate-800/90 p-6 text-center text-slate-200">
+                    No symbols match current filters.
                 </div>
             )}
 
             {!initialLoading && totalSymbols > 0 && (
-                <motion.div
-                    className="grid grid-cols-1 sm:grid-cols-2 xl:grid-cols-3 gap-3 sm:gap-4"
-                    initial="hidden"
-                    animate="show"
-                    variants={{
-                        hidden: {},
-                        show: { transition: { staggerChildren: 0.03 } },
-                    }}
-                >
-                    {grouped.map((g) => {
-                        const opened = openCards.has(g.symbol);
-                        const previewCount = 8;
-                        const showToggle = g.items.length > previewCount;
-                        const visible = opened
-                            ? g.items
-                            : g.items.slice(0, previewCount);
+                <>
+                    {viewMode === "list" ? (
+                        /* ---------- LIST VIEW ---------- */
+                        <motion.div
+                            className="rounded-2xl border border-slate-500/40 bg-slate-800/95 overflow-hidden"
+                            initial="hidden"
+                            animate="show"
+                            variants={{
+                                hidden: {},
+                                show: { transition: { staggerChildren: 0.01 } },
+                            }}
+                        >
+                            {/* Header row */}
+                            <div className="hidden md:grid grid-cols-[1.8fr,2.1fr,1.2fr,1.1fr,1.1fr] gap-2 px-4 py-2.5 text-[9px] font-medium uppercase tracking-[0.14em] text-slate-300 bg-slate-800 border-b border-slate-500/30">
+                                <div>Ticker / exchanges (4)</div>
+                                <div>(short / long)</div>
+                                <div>Spread APR</div>
+                                <div>Spread /h</div>
+                                <div>Range</div>
+                            </div>
 
-                        const apySimple = annualizeSimple(g.spread);
-
-                        return (
-                            <motion.div
-                                key={g.symbol}
-                                variants={{
-                                    hidden: { opacity: 0, y: 8 },
-                                    show: { opacity: 1, y: 0 },
-                                }}
-                                whileHover={{ y: -2 }}
-                                className="group rounded-2xl border border-gray-200 dark:border-gray-700 bg-white dark:bg-gray-800 shadow-sm p-3 sm:p-4 flex flex-col gap-2"
-                            >
-                                {/* Card header */}
-                                <div className="flex flex-col gap-3 sm:flex-row sm:items-start sm:justify-between">
-                                    <div className="min-w-0 flex-1">
-                                        <div className="text-lg sm:text-xl font-bold leading-tight break-words tracking-tight">
-                                            {g.symbol}
-                                        </div>
-
-                                        <div className="my-4 flex flex-col md:flex-row gap-3">
-                                            {/* SHORT */}
-                                            <div className="flex-1 flex flex-col rounded-2xl border border-gray-700/60 bg-gray-800/40 px-4 py-3">
-                                                <div className="text-[10px] uppercase tracking-wide text-gray-400">
-                                                    short on
-                                                </div>
-                                                <div className="font-mono text-sm font-semibold">
-                                                    {String(g.best?.exchange).toLowerCase()}
-                                                </div>
-                                                <div className="text-[11px] text-gray-400">
-                                                    {fmt.pct4(g.best?.rate)}/h
-                                                </div>
+                            {/* Rows */}
+                            {grouped.map((g) => {
+                                const apySimple = annualizeSimple(g.spread);
+                                return (
+                                    <motion.div
+                                        key={g.symbol}
+                                        variants={{
+                                            hidden: { opacity: 0, y: 4 },
+                                            show: { opacity: 1, y: 0 },
+                                        }}
+                                        className="group border-t border-slate-600/30 last:border-b last:rounded-b-2xl hover:bg-slate-700/60 transition-colors"
+                                    >
+                                        {/* Desktop layout */}
+                                        <div className="hidden md:grid grid-cols-[1.8fr,2.1fr,1.2fr,1.1fr,1.1fr] gap-2 px-4 py-2.5 text-[10px] items-center">
+                                            {/* Symbol + inline exchanges (reserve up to 4) */}
+                                            <div className="flex flex-col">
+                                                <button
+                                                    onClick={() => setActiveGroup(g)}
+                                                    className="my-2 text-[11px] font-semibold text-slate-50 hover:text-emerald-300 leading-none text-left"
+                                                >
+                                                    {g.symbol}
+                                                </button>
+                                                <FixedRateChipRow items={g.items} max={4} />
                                             </div>
 
-                                            {/* LONG */}
-                                            <div className="flex-1 flex flex-col rounded-2xl border border-gray-700/60 bg-gray-800/40 px-4 py-3">
-                                                <div className="text-[10px] uppercase tracking-wide text-gray-400">
-                                                    long on
-                                                </div>
-                                                <div className="font-mono text-sm font-semibold">
-                                                    {String(g.worst?.exchange).toLowerCase()}
-                                                </div>
-                                                <div className="text-[11px] text-gray-400">
-                                                    {fmt.pct4(g.worst?.rate)}/h
-                                                </div>
-                                            </div>
-                                        </div>
-
-
-
-                                        <div className="mt-2 space-y-0.5 text-[10px] sm:text-[12px] text-gray-600 dark:text-gray-400">
-                                            <div className="flex flex-wrap items-center gap-2">
-                                                <span>
-                                                    spread{" "}
-                                                    <span className="font-mono">
-                                                        {fmt.pct4(g.spread)}
+                                            {/* Pair info */}
+                                            <div className="flex flex-col gap-0.5 text-slate-100">
+                                                <div className="flex flex-wrap items-center gap-1.5">
+                                                    <span className="text-[9px] text-slate-300">
+                                                        short
                                                     </span>
-                                                    /h
-                                                </span>
-                                                <span className="opacity-60">•</span>
-                                                <span>
-                                                    exchanges{" "}
+                                                    <span className="font-mono text-[10px]">
+                                                        {String(
+                                                            g.best?.exchange
+                                                        ).toLowerCase()}
+                                                    </span>
+                                                    <span className="text-[9px] text-slate-300">
+                                                        {fmt.pct4(
+                                                            g.best?.rate
+                                                        )}
+                                                        /h
+                                                    </span>
+                                                    <span className="text-slate-400">
+                                                        /
+                                                    </span>
+                                                    <span className="text-[9px] text-slate-300">
+                                                        long
+                                                    </span>
+                                                    <span className="font-mono text-[10px]">
+                                                        {String(
+                                                            g.worst?.exchange
+                                                        ).toLowerCase()}
+                                                    </span>
+                                                    <span className="text-[9px] text-slate-300">
+                                                        {fmt.pct4(
+                                                            g.worst?.rate
+                                                        )}
+                                                        /h
+                                                    </span>
+                                                </div>
+                                                <div className="text-[8px] text-slate-300">
+                                                    venues:{" "}
                                                     <span className="font-mono">
                                                         {g.count}
                                                     </span>
+                                                </div>
+                                            </div>
+
+                                            {/* F Spread APR */}
+                                            <div className="flex items-center">
+                                                {spreadBadge(apySimple)}
+                                            </div>
+
+                                            {/* F Spread /h */}
+                                            <div className="flex items-center">
+                                                {spreadBadge(g.spread)}
+                                            </div>
+
+                                            {/* Range + bar */}
+                                            <div className="flex flex-col gap-1">
+                                                <ZeroAnchorBar
+                                                    min={g.min}
+                                                    max={g.max}
+                                                />
+                                                <div className="flex justify-between text-[8px] text-slate-300">
+                                                    <span>
+                                                        {fmt.pct4(g.min)}/h
+                                                    </span>
+                                                    <span>0</span>
+                                                    <span>
+                                                        {fmt.pct4(g.max)}/h
+                                                    </span>
+                                                </div>
+                                            </div>
+                                        </div>
+
+                                        {/* Mobile stacked layout */}
+                                        <div className="md:hidden px-3 py-2.5 text-[10px] flex flex-col gap-1.5">
+                                            <div className="flex items-center gap-2">
+                                                <button
+                                                    onClick={() =>
+                                                        setActiveGroup(g)
+                                                    }
+                                                    className="text-[11px] font-semibold text-slate-50 hover:text-emerald-300"
+                                                >
+                                                    {g.symbol}
+                                                </button>
+                                                {spreadBadge(apySimple)}
+                                            </div>
+                                            {/* Symbol + inline exchanges (reserve up to 4) */}
+                                            <div className="flex flex-col">
+                                                <button
+                                                    onClick={() => setActiveGroup(g)}
+                                                    className="text-[11px] font-semibold text-slate-50 hover:text-emerald-300 leading-none text-left"
+                                                >
+                                                    {g.symbol}
+                                                </button>
+                                                <FixedRateChipRow items={g.items} max={4} />
+                                            </div>
+
+                                            <div className="flex justify-between text-[9px] text-slate-300">
+                                                <span>
+                                                    Δ/h {fmt.pct4(g.spread)}
+                                                </span>
+                                                <span>
+                                                    best {fmt.pct4(g.max)}/h
+                                                </span>
+                                                <span>
+                                                    worst {fmt.pct4(g.min)}/h
                                                 </span>
                                             </div>
-                                            <div className="text-[9px] sm:text-[11px] opacity-80">
-                                                best {fmt.pct4(g.max)}/h ·{" "}
-                                                {String(g.best?.exchange).toLowerCase()} | worst{" "}
-                                                {fmt.pct4(g.min)}/h ·{" "}
-                                                {String(g.worst?.exchange).toLowerCase()}
+                                        </div>
+                                    </motion.div>
+                                );
+                            })}
+                        </motion.div>
+                    ) : (
+                        /* ---------- CARDS VIEW ---------- */
+                        <motion.div
+                            className="grid grid-cols-1 sm:grid-cols-2 xl:grid-cols-3 gap-3 sm:gap-4"
+                            initial="hidden"
+                            animate="show"
+                            variants={{
+                                hidden: {},
+                                show: { transition: { staggerChildren: 0.02 } },
+                            }}
+                        >
+                            {grouped.map((g) => {
+                                const opened = openCards.has(g.symbol);
+                                const previewCount = 8;
+                                const showToggle =
+                                    g.items.length > previewCount;
+                                const visible = opened
+                                    ? g.items
+                                    : g.items.slice(0, previewCount);
+
+                                const apySimple = annualizeSimple(g.spread);
+
+                                return (
+                                    <motion.div
+                                        key={g.symbol}
+                                        variants={{
+                                            hidden: { opacity: 0, y: 6 },
+                                            show: { opacity: 1, y: 0 },
+                                        }}
+                                        whileHover={{ y: -2 }}
+                                        className="group rounded-2xl border border-slate-500/40 bg-slate-800/95 shadow-lg p-3 sm:p-4 flex flex-col gap-2"
+                                    >
+                                        <div className="flex flex-col gap-3 sm:flex-row sm:items-start sm:justify-between">
+                                            <div className="min-w-0 flex-1">
+                                                <div className="text-lg sm:text-xl font-semibold leading-tight tracking-tight text-slate-50">
+                                                    {g.symbol}
+                                                </div>
+                                                <div className="mt-1 text-[10px] text-slate-300">
+                                                    spread{" "}
+                                                    <span className="font-mono text-emerald-300">
+                                                        {fmt.pct4(g.spread)}
+                                                    </span>
+                                                    /h · venues{" "}
+                                                    <span className="font-mono">
+                                                        {g.count}
+                                                    </span>
+                                                </div>
+
+                                                <div className="my-3 grid grid-cols-2 gap-2">
+                                                    <div className="rounded-2xl border border-slate-500/40 bg-slate-800 px-3 py-2">
+                                                        <div className="text-[8px] uppercase tracking-wide text-slate-300">
+                                                            short on
+                                                        </div>
+                                                        <div className="font-mono text-[11px] text-slate-50 mt-0.5">
+                                                            {String(
+                                                                g.best
+                                                                    ?.exchange
+                                                            ).toLowerCase()}
+                                                        </div>
+                                                        <div className="text-[9px] text-slate-300 mt-0.5">
+                                                            {fmt.pct4(
+                                                                g.best?.rate
+                                                            )}
+                                                            /h
+                                                        </div>
+                                                    </div>
+                                                    <div className="rounded-2xl border border-slate-500/40 bg-slate-800 px-3 py-2">
+                                                        <div className="text-[8px] uppercase tracking-wide text-slate-300">
+                                                            long on
+                                                        </div>
+                                                        <div className="font-mono text-[11px] text-slate-50 mt-0.5">
+                                                            {String(
+                                                                g.worst
+                                                                    ?.exchange
+                                                            ).toLowerCase()}
+                                                        </div>
+                                                        <div className="text-[9px] text-slate-300 mt-0.5">
+                                                            {fmt.pct4(
+                                                                g.worst?.rate
+                                                            )}
+                                                            /h
+                                                        </div>
+                                                    </div>
+                                                </div>
+                                            </div>
+
+                                            <button
+                                                onClick={() =>
+                                                    setActiveGroup(g)
+                                                }
+                                                className="w-full sm:w-auto inline-flex items-center justify-center gap-1.5 rounded-xl bg-emerald-400 text-slate-900 px-3 py-1.5 text-[10px] sm:text-[11px] font-semibold shadow hover:bg-emerald-300"
+                                            >
+                                                <Percent className="h-3.5 w-3.5" />
+                                                details
+                                                <span className="font-mono">
+                                                    {fmt.pct2(apySimple)}
+                                                </span>
+                                            </button>
+                                        </div>
+
+                                        <div>
+                                            <ZeroAnchorBar
+                                                min={g.min}
+                                                max={g.max}
+                                            />
+                                            <div className="mt-1 grid grid-cols-3 text-[8px] sm:text-[9px] text-slate-300">
+                                                <div>
+                                                    min {fmt.pct4(g.min)}/h
+                                                </div>
+                                                <div className="text-center">
+                                                    0%/h
+                                                </div>
+                                                <div className="text-right">
+                                                    max {fmt.pct4(g.max)}/h
+                                                </div>
                                             </div>
                                         </div>
-                                    </div>
 
-                                    {/* CTA */}
-                                    <button
-                                        onClick={() => setActiveGroup(g)}
-                                        className="w-full sm:w-auto inline-flex items-center justify-center gap-1.5 rounded-xl bg-emerald-600 text-white px-3 py-2 text-[11px] sm:text-[12px] font-semibold shadow hover:bg-emerald-700 focus:outline-none focus:ring-2 focus:ring-emerald-400 focus:ring-offset-1 dark:focus:ring-offset-gray-900 transition"
-                                        title="Open arbitrage details"
-                                    >
-                                        <Percent className="h-3.5 w-3.5 sm:h-4 sm:w-4" />
-                                        details
-                                        <span className="ml-0.5 font-mono">
-                                            {fmt.pct2(apySimple)}
-                                        </span>
-                                    </button>
-                                </div>
-
-                                {/* Tiny bar */}
-                                <div className="mt-1">
-                                    <ZeroAnchorBar min={g.min} max={g.max} />
-                                    <div className="mt-1 grid grid-cols-3 text-[9px] sm:text-[11px] text-gray-500">
-                                        <div>min {fmt.pct4(g.min)}/h</div>
-                                        <div className="text-center">0%/h</div>
-                                        <div className="text-right">
-                                            max {fmt.pct4(g.max)}/h
+                                        <div className="mt-2 flex flex-wrap gap-1.5">
+                                            {visible.map((it) => (
+                                                <RateChip
+                                                    key={
+                                                        String(
+                                                            it.exchange
+                                                        ) + String(it.market_id)
+                                                    }
+                                                    exchange={it.exchange}
+                                                    rate={it.rate}
+                                                />
+                                            ))}
                                         </div>
-                                    </div>
-                                </div>
 
-                                {/* Chips */}
-                                <div className="mt-2 flex flex-wrap gap-1.5">
-                                    {visible.map((it) => (
-                                        <RateChip
-                                            key={
-                                                String(it.exchange) + String(it.market_id)
-                                            }
-                                            exchange={it.exchange}
-                                            rate={it.rate}
-                                        />
-                                    ))}
-                                </div>
-
-                                {/* Toggle */}
-                                {showToggle && (
-                                    <button
-                                        className="mt-2 inline-flex items-center gap-1 self-start text-[10px] sm:text-xs rounded-md border border-gray-300 dark:border-gray-600 px-2 py-1 hover:bg-gray-50 dark:hover:bg-gray-700"
-                                        onClick={() => toggleCard(g.symbol)}
-                                    >
-                                        {opened ? (
-                                            <>
-                                                <ChevronUp className="h-3 w-3" />
-                                                show less
-                                            </>
-                                        ) : (
-                                            <>
-                                                <ChevronDown className="h-3 w-3" />
-                                                show all ({g.items.length})
-                                            </>
+                                        {showToggle && (
+                                            <button
+                                                className="mt-2 inline-flex items-center gap-1 self-start text-[9px] sm:text-[10px] rounded-md border border-slate-500/40 px-2 py-1 text-slate-200 hover:bg-slate-800"
+                                                onClick={() =>
+                                                    toggleCard(g.symbol)
+                                                }
+                                            >
+                                                {opened ? (
+                                                    <>
+                                                        <ChevronUp className="h-3 w-3" />
+                                                        show less
+                                                    </>
+                                                ) : (
+                                                    <>
+                                                        <ChevronDown className="h-3 w-3" />
+                                                        show all (
+                                                        {g.items.length})
+                                                    </>
+                                                )}
+                                            </button>
                                         )}
-                                    </button>
-                                )}
-                            </motion.div>
-                        );
-                    })}
-                </motion.div>
+                                    </motion.div>
+                                );
+                            })}
+                        </motion.div>
+                    )}
+                </>
             )}
 
             {/* Modal */}
@@ -793,9 +1090,9 @@ export default function FundingDifferences() {
                         exit={{ opacity: 0 }}
                         onClick={() => setActiveGroup(null)}
                     >
-                        <div className="absolute inset-0 bg-black/40 backdrop-blur-sm" />
+                        <div className="absolute inset-0 bg-black/45 backdrop-blur-sm" />
                         <motion.div
-                            className="relative w-full max-w-2xl rounded-2xl border border-gray-200 dark:border-gray-700 bg-white dark:bg-gray-900 shadow-2xl"
+                            className="relative w-full max-w-2xl rounded-2xl border border-slate-500/40 bg-slate-800 shadow-2xl"
                             initial={{ y: 24, opacity: 0 }}
                             animate={{ y: 0, opacity: 1 }}
                             exit={{ y: 24, opacity: 0 }}
@@ -803,15 +1100,15 @@ export default function FundingDifferences() {
                         >
                             <div className="flex items-center justify-between gap-3 px-4 sm:px-5 pt-4">
                                 <div>
-                                    <div className="text-xs text-gray-500">
+                                    <div className="text-[9px] uppercase tracking-[0.16em] text-slate-300">
                                         arbitrage opportunity
                                     </div>
-                                    <div className="text-2xl font-bold tracking-tight">
+                                    <div className="text-2xl font-semibold tracking-tight text-slate-50">
                                         {activeGroup.symbol}
                                     </div>
                                 </div>
                                 <button
-                                    className="rounded-lg p-2 hover:bg-gray-100 dark:hover:bg-gray-800"
+                                    className="rounded-lg p-2 hover:bg-slate-700 text-slate-200"
                                     onClick={() => setActiveGroup(null)}
                                     aria-label="Close"
                                 >
@@ -831,11 +1128,9 @@ export default function FundingDifferences() {
                 )}
             </AnimatePresence>
 
-            {/* Risk/UX footer */}
-            <div className="mt-4 text-[11px] text-gray-500">
-                Estimates ignore funding schedule misalignments (1h vs 8h accrual),
-                index/basis drift between venues, collateral yield, borrow constraints
-                and operational risks. Do your own research.
+            <div className="mt-3 text-[9px] text-slate-300">
+                All values are indicative only and exclude fees, schedule
+                misalignments, leg risk, and operational constraints.
             </div>
         </div>
     );
