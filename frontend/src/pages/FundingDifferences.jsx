@@ -130,7 +130,7 @@ function RateChip({ exchange, rate }) {
   const negative = Number.isFinite(rate) && rate < 0;
 
   const base =
-    "inline-flex items-center gap-1 px-2 py-0.5 rounded-2xl border text-[9px] font-mono leading-none";
+    "inline-flex items-center gap-1 px-2 py-0.5 rounded-2xl border text-[10px] font-mono leading-none";
 
   const cls = negative
     ? `${base} border-red-400 bg-red-50 text-red-700 dark:border-red-500 dark:bg-red-900/30 dark:text-red-200`
@@ -197,7 +197,7 @@ function ArbPanel({ symbol, best, worst, spread }) {
 
       <div className="mt-2 grid grid-cols-1 sm:grid-cols-3 gap-2">
         <div className={`${cardTight} p-2`}>
-          <div className="text-[9px] uppercase tracking-wide text-gray-500 dark:text-gray-400">
+          <div className="text-[10px] uppercase tracking-wide text-gray-500 dark:text-gray-400">
             hourly (gross)
           </div>
           <div className="text-lg font-bold font-mono text-emerald-600 dark:text-emerald-300">
@@ -208,7 +208,7 @@ function ArbPanel({ symbol, best, worst, spread }) {
           </div>
         </div>
         <div className={`${cardTight} p-2`}>
-          <div className="text-[9px] uppercase tracking-wide text-gray-500 dark:text-gray-400">
+          <div className="text-[10px] uppercase tracking-wide text-gray-500 dark:text-gray-400">
             annualized (simple)
           </div>
           <div className="text-[11px]">
@@ -219,7 +219,7 @@ function ArbPanel({ symbol, best, worst, spread }) {
           </div>
         </div>
         <div className={`${cardTight} p-2 space-y-0.5`}>
-          <div className="text-[9px] uppercase tracking-wide text-gray-500 dark:text-gray-400">
+          <div className="text-[10px] uppercase tracking-wide text-gray-500 dark:text-gray-400">
             legs
           </div>
           <div className="text-[10px]">
@@ -268,7 +268,7 @@ function ArbPanel({ symbol, best, worst, spread }) {
                 ({fmt.pct4(worst?.rate)}/h, {describeLeg(worst?.rate)}).
               </li>
             </ul>
-            <div className="text-[9px] text-gray-500 dark:text-gray-400 mt-2">
+            <div className="text-[10px] text-gray-500 dark:text-gray-400 mt-2">
               Net (gross) ≈ high − low = {fmt.pct4(hourlyGross)}/h.
             </div>
           </div>
@@ -283,13 +283,13 @@ function ArbPanel({ symbol, best, worst, spread }) {
 const spreadBadge = (v) => {
   if (!Number.isFinite(v)) {
     return (
-      <span className="px-2 py-1 rounded-xl text-[9px] text-gray-500">
+      <span className="px-2 py-1 rounded-xl text-[12px] text-gray-500">
         —
       </span>
     );
   }
   const base =
-    "px-2 py-1 rounded-2xl text-[9px] font-semibold font-mono inline-flex justify-center min-w-[64px]";
+    "px-2 py-1 rounded-2xl text-[12px] font-semibold font-mono inline-flex justify-center min-w-[64px]";
   if (v > 0) {
     return (
       <span className={`${base} bg-emerald-500 text-white`}>
@@ -681,7 +681,7 @@ export default function FundingDifferences() {
             <div className="relative inline-flex items-center rounded-2xl border border-gray-300 bg-white/85 p-0.5 dark:border-gray-700 dark:bg-gray-900">
               <button
                 onClick={() => setViewMode("list")}
-                className="relative px-3 py-1.5 text-[9px] sm:text-[10px] rounded-2xl"
+                className="relative px-3 py-1.5 text-[10px] sm:text-[10px] rounded-2xl"
               >
                 {viewMode === "list" && (
                   <motion.div
@@ -707,7 +707,7 @@ export default function FundingDifferences() {
               </button>
               <button
                 onClick={() => setViewMode("cards")}
-                className="relative px-3 py-1.5 text-[9px] sm:text-[10px] rounded-2xl"
+                className="relative px-3 py-1.5 text-[10px] sm:text-[10px] rounded-2xl"
               >
                 {viewMode === "cards" && (
                   <motion.div
@@ -737,7 +737,7 @@ export default function FundingDifferences() {
 
         {/* Summary + error */}
         {error && (
-          <div className="mt-2 text-[10px] text-red-500 flex items-center gap-1.5">
+          <div className="mt-2 text-[10px] text-red-500 flex items-center gap-1.5 px-2">
             <Info className="h-3.5 w-3.5" />
             {error}
           </div>
@@ -795,8 +795,8 @@ export default function FundingDifferences() {
                 show: { transition: { staggerChildren: 0.01 } },
               }}
             >
-              {/* Header row (desktop) */}
-              <div className="hidden md:grid grid-cols-[2.7fr,2.5fr,1.1fr,1.1fr] gap-2 px-3 py-2 text-[9px] font-medium uppercase tracking-[0.16em] text-gray-500 dark:text-gray-400 border-b border-gray-200 dark:border-gray-800 bg-white/70 dark:bg-gray-900">
+              {/* Header row (desktop) - bigger text */}
+              <div className="hidden md:grid grid-cols-[2.7fr,2.5fr,1.1fr,1.1fr] gap-2 px-3 py-2 text-[11px] font-medium uppercase tracking-[0.16em] text-gray-500 dark:text-gray-400 border-b border-gray-200 dark:border-gray-800 bg-white/70 dark:bg-gray-900">
                 <div>Ticker / exchanges</div>
                 <div>(short / long)</div>
                 <div>Spread APR</div>
@@ -815,12 +815,12 @@ export default function FundingDifferences() {
                     }}
                     className="group border-t border-gray-100 dark:border-gray-800 last:border-b hover:bg-gray-50/80 dark:hover:bg-gray-900/80 transition-colors"
                   >
-                    {/* Desktop layout */}
-                    <div className="hidden md:grid grid-cols-[2.7fr,2.5fr,1.1fr,1.1fr] gap-2 px-3 py-2.5 text-[10px] items-center">
+                    {/* Desktop layout - bigger text */}
+                    <div className="hidden md:grid grid-cols-[2.7fr,2.5fr,1.1fr,1.1fr] gap-2 px-3 py-2.5 text-[11px] items-center">
                       <div className="flex flex-col gap-1">
                         <button
                           onClick={() => setActiveGroup(g)}
-                          className="text-[11px] font-semibold text-gray-900 hover:text-emerald-600 text-left dark:text-gray-50 dark:hover:text-emerald-300"
+                          className="text-[12px] font-semibold text-gray-900 hover:text-emerald-600 text-left dark:text-gray-50 dark:hover:text-emerald-300"
                         >
                           {g.symbol}
                         </button>
@@ -830,7 +830,7 @@ export default function FundingDifferences() {
                       <div className="flex flex-col gap-1">
                         <div className="flex flex-wrap items-center gap-1.5">
                           {/* short */}
-                          <div className="inline-flex items-center gap-1 px-2 py-1 rounded-2xl bg-red-500 text-white text-[9px]">
+                          <div className="inline-flex items-center gap-1 px-2 py-1 rounded-2xl bg-red-500 text-white text-[10px]">
                             <span className="uppercase tracking-wide">
                               short
                             </span>
@@ -842,7 +842,7 @@ export default function FundingDifferences() {
                             </span>
                           </div>
                           {/* long */}
-                          <div className="inline-flex items-center gap-1 px-2 py-1 rounded-2xl bg-emerald-500 text-slate-900 text-[9px]">
+                          <div className="inline-flex items-center gap-1 px-2 py-1 rounded-2xl bg-emerald-500 text-slate-900 text-[10px]">
                             <span className="uppercase tracking-wide">
                               long
                             </span>
@@ -854,7 +854,7 @@ export default function FundingDifferences() {
                             </span>
                           </div>
                         </div>
-                        <div className="text-[8px] text-gray-500 dark:text-gray-400">
+                        <div className="text-[10px] text-gray-500 dark:text-gray-400">
                           venues:{" "}
                           <span className="font-mono">{g.count}</span>
                         </div>
@@ -869,12 +869,12 @@ export default function FundingDifferences() {
                       </div>
                     </div>
 
-                    {/* Mobile stacked layout */}
-                    <div className="md:hidden px-2.5 py-2 flex flex-col gap-1.5 text-[9px]">
+                    {/* Mobile stacked layout - bigger text */}
+                    <div className="md:hidden px-2.5 py-2 flex flex-col gap-1.5 text-[10px]">
                       <div className="flex items-center justify-between gap-2">
                         <button
                           onClick={() => setActiveGroup(g)}
-                          className="text-[10px] font-semibold text-gray-900 hover:text-emerald-600 dark:text-gray-50 dark:hover:text-emerald-300"
+                          className="text-[11px] font-semibold text-gray-900 hover:text-emerald-600 dark:text-gray-50 dark:hover:text-emerald-300"
                         >
                           {g.symbol}
                         </button>
@@ -882,7 +882,7 @@ export default function FundingDifferences() {
                       </div>
 
                       <div className="flex flex-wrap gap-1">
-                        <div className="inline-flex items-center gap-1 px-2 py-1 rounded-2xl bg-red-500 text-white text-[8px]">
+                        <div className="inline-flex items-center gap-1 px-2 py-1 rounded-2xl bg-red-500 text-white text-[10px]">
                           <span className="uppercase">short</span>
                           <span className="font-mono">
                             {String(g.best?.exchange).toLowerCase()}
@@ -891,7 +891,7 @@ export default function FundingDifferences() {
                             {fmt.pct4(g.best?.rate)}/h
                           </span>
                         </div>
-                        <div className="inline-flex items-center gap-1 px-2 py-1 rounded-2xl bg-emerald-500 text-slate-900 text-[8px]">
+                        <div className="inline-flex items-center gap-1 px-2 py-1 rounded-2xl bg-emerald-500 text-slate-900 text-[10px]">
                           <span className="uppercase">long</span>
                           <span className="font-mono">
                             {String(g.worst?.exchange).toLowerCase()}
@@ -904,7 +904,7 @@ export default function FundingDifferences() {
 
                       <FixedRateChipRow items={g.items} max={3} />
 
-                      <div className="flex justify-between text-[8px] text-gray-500 dark:text-gray-400">
+                      <div className="flex justify-between text-[10px] text-gray-500 dark:text-gray-400">
                         <span>Δ/h {fmt.pct4(g.spread)}</span>
                         <span>best {fmt.pct4(g.max)}/h</span>
                         <span>worst {fmt.pct4(g.min)}/h</span>
@@ -949,7 +949,7 @@ export default function FundingDifferences() {
                         <div className="text-base sm:text-lg font-semibold leading-tight">
                           {g.symbol}
                         </div>
-                        <div className="mt-0.5 text-[9px] text-gray-600 dark:text-gray-400">
+                        <div className="mt-0.5 text-[10px] text-gray-600 dark:text-gray-400">
                           spread{" "}
                           <span className="font-mono text-emerald-600 dark:text-emerald-300">
                             {fmt.pct4(g.spread)}
@@ -960,7 +960,7 @@ export default function FundingDifferences() {
                       </div>
                       <button
                         onClick={() => setActiveGroup(g)}
-                        className="inline-flex items-center gap-1 rounded-2xl bg-emerald-400 text-gray-900 px-2.5 py-1 text-[9px] font-semibold hover:bg-emerald-300"
+                        className="inline-flex items-center gap-1 rounded-2xl bg-emerald-400 text-gray-900 px-2.5 py-1 text-[10px] font-semibold hover:bg-emerald-300"
                       >
                         <Percent className="h-3 w-3" />
                         details
@@ -979,7 +979,7 @@ export default function FundingDifferences() {
                         <div className="font-mono text-[10px] mt-0.5">
                           {String(g.best?.exchange).toLowerCase()}
                         </div>
-                        <div className="text-[9px] mt-0.5">
+                        <div className="text-[10px] mt-0.5">
                           {fmt.pct4(g.best?.rate)}/h
                         </div>
                       </div>
@@ -991,7 +991,7 @@ export default function FundingDifferences() {
                         <div className="font-mono text-[10px] mt-0.5">
                           {String(g.worst?.exchange).toLowerCase()}
                         </div>
-                        <div className="text-[9px] mt-0.5">
+                        <div className="text-[10px] mt-0.5">
                           {fmt.pct4(g.worst?.rate)}/h
                         </div>
                       </div>
@@ -1096,7 +1096,7 @@ export default function FundingDifferences() {
         )}
       </AnimatePresence>
 
-      <div className="mt-2 text-[8px] sm:text-[9px] text-gray-500 dark:text-gray-400">
+      <div className="mt-2 text-[8px] sm:text-[10px] text-gray-500 dark:text-gray-400">
         All values are indicative only and exclude fees, schedule
         misalignments, leg risk, and operational constraints.
       </div>
