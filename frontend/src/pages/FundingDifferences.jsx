@@ -25,17 +25,13 @@ import {
 const baseFont =
   "system-ui, -apple-system, BlinkMacSystemFont, 'SF Pro Text', 'Segoe UI', sans-serif";
 
-const CARD =
-  "rounded-2xl border border-slate-800 bg-slate-900/95";
-const CARD_SOFT =
-  "rounded-2xl border border-slate-800 bg-slate-900/90";
-const CARD_DENSE =
-  "rounded-xl border border-slate-800 bg-slate-900/95";
-
-const SHORT_PILL =
-  "inline-flex items-center gap-1 px-2 py-0.5 rounded-md border border-red-600 bg-red-900/40 text-red-200 text-[9px]";
-const LONG_PILL =
-  "inline-flex items-center gap-1 px-2 py-0.5 rounded-md border border-emerald-600 bg-emerald-900/30 text-emerald-200 text-[9px]";
+// match PointsCalculator card style (but slightly darker)
+const cardBase =
+  "rounded-2xl border border-gray-200 bg-white/80 shadow-sm dark:border-gray-800 dark:bg-gray-900/85";
+const cardSoft =
+  "rounded-2xl border border-gray-200 bg-white/85 shadow-sm dark:border-gray-800 dark:bg-gray-900/90";
+const cardTight =
+  "rounded-xl border border-gray-200 bg-white/80 shadow-sm dark:border-gray-800 dark:bg-gray-900/90";
 
 /* ---------- math + formatting helpers ---------- */
 
@@ -83,7 +79,8 @@ const EXCHANGE_INTERVAL_HOURS = {
 const toHourly = (rec) => {
   const normalizeUnit = (x) => {
     if (!Number.isFinite(x)) return NaN;
-    return Math.abs(x) >= 0.05 ? x / 100 : x; // percent vs decimal
+    // treat >= 0.05 as percent, else decimal
+    return Math.abs(x) >= 0.05 ? x / 100 : x;
   };
 
   const rawIn = toNum(rec?.rate);
@@ -113,14 +110,14 @@ const FETCH_OPTS = {
 function ZeroAnchorBar({ min, max }) {
   if (!Number.isFinite(min) || !Number.isFinite(max) || max === min) {
     return (
-      <div className="h-1.5 rounded-full bg-slate-900" />
+      <div className="h-1.5 rounded-full bg-gray-200 dark:bg-gray-800" />
     );
   }
   const ratio = clamp(-min / (max - min));
   return (
-    <div className="relative h-1.5 rounded-full bg-slate-950 overflow-hidden">
+    <div className="relative h-1.5 rounded-full bg-gray-200 dark:bg-gray-800 overflow-hidden">
       <div
-        className="absolute top-0 bottom-0 w-[2px] bg-slate-500"
+        className="absolute top-0 bottom-0 w-[2px] bg-gray-500 dark:bg-gray-300"
         style={{ left: `${ratio * 100}%` }}
         title="0% anchor"
       />
@@ -133,13 +130,13 @@ function RateChip({ exchange, rate }) {
   const negative = Number.isFinite(rate) && rate < 0;
 
   const base =
-    "inline-flex items-center gap-1 px-2 py-0.5 rounded-md border text-[10px] font-mono leading-none";
+    "inline-flex items-center gap-1 px-2 py-0.5 rounded-2xl border text-[9px] font-mono leading-none";
 
   const cls = negative
-    ? `${base} border-red-600 bg-red-900/40 text-red-200`
+    ? `${base} border-red-400 bg-red-50 text-red-700 dark:border-red-500 dark:bg-red-900/30 dark:text-red-200`
     : positive
-    ? `${base} border-emerald-600 bg-emerald-900/30 text-emerald-200`
-    : `${base} border-slate-700 bg-slate-900/80 text-slate-200`;
+      ? `${base} border-emerald-400 bg-emerald-50 text-emerald-700 dark:border-emerald-500 dark:bg-emerald-900/30 dark:text-emerald-200`
+      : `${base} border-gray-300 bg-gray-50 text-gray-700 dark:border-gray-600 dark:bg-gray-900/50 dark:text-gray-200`;
 
   return (
     <span className={cls} title={`${exchange} · ${fmt.pct4(rate)}/h`}>
@@ -151,7 +148,7 @@ function RateChip({ exchange, rate }) {
   );
 }
 
-/* reserve 4 chips width so rows don't jump */
+// keep rows stable
 function FixedRateChipRow({ items, max = 4 }) {
   const visible = items.slice(0, max);
   const missing = Math.max(0, max - visible.length);
@@ -192,48 +189,54 @@ function ArbPanel({ symbol, best, worst, spread }) {
   const apySimple = annualizeSimple(hourlyGross);
 
   return (
-    <div className={`${CARD} mt-3 p-3 sm:p-4 text-xs sm:text-sm text-slate-50 space-y-3`}>
-      <div className="flex items-center gap-2 font-semibold text-emerald-300">
+    <div className={`${cardBase} mt-3 p-3 sm:p-4 text-xs sm:text-sm`}>
+      <div className="flex items-center gap-2 font-semibold text-emerald-600 dark:text-emerald-300">
         <Percent className="h-4 w-4" />
         Delta-neutral funding capture (LIGHTER ↔ other)
       </div>
 
-      <div className="grid grid-cols-1 sm:grid-cols-3 gap-2">
-        <div className={`${CARD_DENSE} p-2`}>
-          <div className="text-[10px] uppercase tracking-wide text-slate-400">
+      <div className="mt-2 grid grid-cols-1 sm:grid-cols-3 gap-2">
+        <div className={`${cardTight} p-2`}>
+          <div className="text-[9px] uppercase tracking-wide text-gray-500 dark:text-gray-400">
             hourly (gross)
           </div>
-          <div className="text-lg font-bold font-mono text-emerald-300">
+          <div className="text-lg font-bold font-mono text-emerald-600 dark:text-emerald-300">
             {fmt.pct4(hourlyGross)}
           </div>
-          <div className="text-[11px] text-slate-400">
+          <div className="text-[10px] text-gray-500 dark:text-gray-400">
             daily ≈ {fmt.pct4(dailyGross)}
           </div>
         </div>
-        <div className={`${CARD_DENSE} p-2`}>
-          <div className="text-[10px] uppercase tracking-wide text-slate-400">
+        <div className={`${cardTight} p-2`}>
+          <div className="text-[9px] uppercase tracking-wide text-gray-500 dark:text-gray-400">
             annualized (simple)
           </div>
-          <div className="text-sm">
+          <div className="text-[11px]">
             APY ~{" "}
-            <span className="font-mono font-semibold text-emerald-300">
+            <span className="font-mono font-semibold text-emerald-600 dark:text-emerald-300">
               {fmt.pct2(apySimple)}
             </span>
           </div>
         </div>
-        <div className={`${CARD_DENSE} p-2 space-y-0.5`}>
-          <div className="text-[10px] uppercase tracking-wide text-slate-400">
+        <div className={`${cardTight} p-2 space-y-0.5`}>
+          <div className="text-[9px] uppercase tracking-wide text-gray-500 dark:text-gray-400">
             legs
           </div>
-          <div className="text-[11px]">
-            <span className="font-semibold text-red-300">short</span> on{" "}
+          <div className="text-[10px]">
+            <span className="font-semibold text-red-600 dark:text-red-300">
+              short
+            </span>{" "}
+            on{" "}
             <span className="font-mono">
               {String(best?.exchange).toLowerCase()}
             </span>{" "}
             ({fmt.pct4(best?.rate)}/h)
           </div>
-          <div className="text-[11px]">
-            <span className="font-semibold text-emerald-300">long</span> on{" "}
+          <div className="text-[10px]">
+            <span className="font-semibold text-emerald-600 dark:text-emerald-300">
+              long
+            </span>{" "}
+            on{" "}
             <span className="font-mono">
               {String(worst?.exchange).toLowerCase()}
             </span>{" "}
@@ -242,10 +245,10 @@ function ArbPanel({ symbol, best, worst, spread }) {
         </div>
       </div>
 
-      <div className={`${CARD_DENSE} p-2.5`}>
+      <div className={`${cardTight} mt-2 p-2.5`}>
         <div className="flex items-start gap-2">
-          <Calculator className="h-4 w-4 mt-0.5 text-slate-500" />
-          <div className="text-[11px] leading-relaxed">
+          <Calculator className="h-4 w-4 mt-0.5 text-gray-400 dark:text-gray-500" />
+          <div className="text-[10px] leading-relaxed text-gray-800 dark:text-gray-100">
             <div className="font-semibold">
               Execution (ignoring fees / basis risk)
             </div>
@@ -265,7 +268,7 @@ function ArbPanel({ symbol, best, worst, spread }) {
                 ({fmt.pct4(worst?.rate)}/h, {describeLeg(worst?.rate)}).
               </li>
             </ul>
-            <div className="text-[9px] text-slate-500 mt-2">
+            <div className="text-[9px] text-gray-500 dark:text-gray-400 mt-2">
               Net (gross) ≈ high − low = {fmt.pct4(hourlyGross)}/h.
             </div>
           </div>
@@ -280,29 +283,29 @@ function ArbPanel({ symbol, best, worst, spread }) {
 const spreadBadge = (v) => {
   if (!Number.isFinite(v)) {
     return (
-      <span className="px-2 py-1 rounded-md text-[10px] text-slate-400">
+      <span className="px-2 py-1 rounded-xl text-[9px] text-gray-500">
         —
       </span>
     );
   }
   const base =
-    "px-2 py-1 rounded-md text-[10px] font-semibold font-mono inline-flex justify-center min-w-[64px]";
+    "px-2 py-1 rounded-2xl text-[9px] font-semibold font-mono inline-flex justify-center min-w-[64px]";
   if (v > 0) {
     return (
-      <span className={`${base} bg-emerald-900/40 text-emerald-300 border border-emerald-500/60`}>
+      <span className={`${base} bg-emerald-500 text-white`}>
         {fmt.pct2(v)}
       </span>
     );
   }
   if (v < 0) {
     return (
-      <span className={`${base} bg-red-900/40 text-red-300 border border-red-500/60`}>
+      <span className={`${base} bg-red-500 text-white`}>
         {fmt.pct2(v)}
       </span>
     );
   }
   return (
-    <span className={`${base} bg-slate-900/60 text-slate-200 border border-slate-700`}>
+    <span className={`${base} bg-gray-200 text-gray-800 dark:bg-gray-800 dark:text-gray-100`}>
       {fmt.pct2(v)}
     </span>
   );
@@ -422,7 +425,9 @@ export default function FundingDifferences() {
       let bestPair = null;
 
       for (const it of items) {
-        if (String(it.exchange || "").toUpperCase() === "LIGHTER")
+        if (
+          String(it.exchange || "").toUpperCase() === "LIGHTER"
+        )
           continue;
 
         const rO = toNum(it.rate);
@@ -467,22 +472,27 @@ export default function FundingDifferences() {
         .filter(Number.isFinite);
 
       const regime =
-        finiteRates.length && finiteRates.every((x) => x < 0)
+        finiteRates.length &&
+          finiteRates.every((x) => x < 0)
           ? "all-negative"
-          : finiteRates.length && finiteRates.every((x) => x > 0)
-          ? "all-positive"
-          : "mixed";
+          : finiteRates.length &&
+            finiteRates.every((x) => x > 0)
+            ? "all-positive"
+            : "mixed";
 
       const chipItems = items
         .filter((i) => Number.isFinite(toNum(i.rate)))
         .sort((a, b) => {
           const aIsL =
-            String(a.exchange || "").toUpperCase() === "LIGHTER";
+            String(a.exchange || "").toUpperCase() ===
+            "LIGHTER";
           const bIsL =
-            String(b.exchange || "").toUpperCase() === "LIGHTER";
+            String(b.exchange || "").toUpperCase() ===
+            "LIGHTER";
           if (aIsL !== bIsL) return aIsL ? -1 : 1;
           return (
-            Math.abs(toNum(b.rate)) - Math.abs(toNum(a.rate))
+            Math.abs(toNum(b.rate)) -
+            Math.abs(toNum(a.rate))
           );
         })
         .map((i) => ({
@@ -574,32 +584,32 @@ export default function FundingDifferences() {
 
   return (
     <div
-      className="max-w-6xl mx-auto px-3 md:px-4 lg:px-6 py-4 text-slate-50"
+      className="w-full text-gray-900 dark:text-gray-50"
       style={{ fontFamily: baseFont }}
     >
       {/* Header */}
       <motion.div
-        className={`${CARD} mb-4 p-3 sm:p-4 shadow-lg`}
+        className={`${cardSoft} mb-3 sm:mb-4`}
         initial={{ opacity: 0, y: -4 }}
         animate={{ opacity: 1, y: 0 }}
-        transition={{ duration: 0.2 }}
+        transition={{ duration: 0.18 }}
       >
-        <div className="flex flex-wrap items-center gap-2 text-sm sm:text-base font-semibold tracking-tight">
+        <div className="flex flex-wrap items-center gap-2 text-sm sm:text-base font-semibold tracking-tight p-2">
           <span className="inline-flex items-center gap-1.5">
-            <TrendingUp className="h-4 w-4 text-emerald-400" />
+            <TrendingUp className="h-4 w-4 text-emerald-500" />
             <span>Lighter perp funding</span>
           </span>
-          <span className="text-[10px] text-slate-400">
+          <span className="text-[10px] text-gray-500 dark:text-gray-400">
             ({totalSymbols})
           </span>
           {refreshing && (
-            <span className="ml-1 inline-flex items-center gap-1 text-[10px] text-emerald-400">
-              <span className="h-2.5 w-2.5 rounded-full border-[2px] border-emerald-400 border-t-transparent animate-spin" />
+            <span className="ml-1 inline-flex items-center gap-1 text-[10px] text-emerald-500">
+              <span className="h-2.5 w-2.5 rounded-full border-[2px] border-emerald-500 border-t-transparent animate-spin" />
               updating
             </span>
           )}
           <button
-            className="ml-auto inline-flex items-center gap-1 rounded-xl border border-slate-700 bg-slate-900 px-2.5 py-1.5 text-[10px] text-slate-50 hover:bg-slate-800"
+            className="ml-auto inline-flex items-center gap-1 rounded-2xl border border-gray-300 bg-white/80 px-2.5 py-1.5 text-[10px] text-gray-800 hover:bg-gray-100 dark:border-gray-700 dark:bg-gray-900/90 dark:text-gray-100 dark:hover:bg-gray-800"
             onClick={() => fetchFunding(false)}
           >
             <RefreshCcw className="h-3.5 w-3.5" />
@@ -607,20 +617,20 @@ export default function FundingDifferences() {
           </button>
         </div>
 
-        <div className="mt-1 text-[10px] text-slate-400">
+        <div className="mt-1 text-[10px] text-gray-600 dark:text-gray-400 px-2">
           Rates normalized to{" "}
-          <span className="font-semibold text-slate-100">per-hour</span>, comparing{" "}
-          <span className="font-semibold text-slate-100">LIGHTER</span> vs other
+          <span className="font-semibold">per-hour</span>, comparing{" "}
+          <span className="font-semibold">LIGHTER</span> vs other
           exchanges.
         </div>
 
         {/* Controls */}
-        <div className="mt-3 grid grid-cols-1 lg:grid-cols-[minmax(0,2.7fr)_auto_auto] gap-2 lg:items-center">
+        <div className="mt-2.5 grid grid-cols-1 lg:grid-cols-[minmax(0,2.7fr)_auto_auto] gap-2 lg:items-center px-2">
           {/* Search */}
-          <div className="flex items-center gap-2 rounded-xl border border-slate-700 bg-slate-900 px-2.5">
-            <Search className="h-3.5 w-3.5 text-slate-500 shrink-0" />
+          <div className="flex items-center gap-2 rounded-2xl border border-gray-300 bg-white/80 px-2.5 dark:border-gray-700 dark:bg-gray-900">
+            <Search className="h-3.5 w-3.5 text-gray-400 shrink-0" />
             <input
-              className="h-8 sm:h-9 flex-1 bg-transparent text-[11px] sm:text-sm text-slate-50 placeholder:text-slate-500 outline-none min-w-0"
+              className="h-8 sm:h-9 flex-1 bg-transparent text-[11px] sm:text-sm text-gray-900 placeholder:text-gray-400 outline-none min-w-0 dark:text-gray-100"
               placeholder="Search symbol (BTC, ETH, TAO...)"
               value={query}
               onChange={(e) => setQuery(e.target.value)}
@@ -628,10 +638,10 @@ export default function FundingDifferences() {
           </div>
 
           {/* Hide zeros */}
-          <label className="inline-flex items-center gap-1.5 text-[10px] sm:text-[11px] text-slate-300">
+          <label className="inline-flex items-center gap-1.5 text-[10px] sm:text-[11px] text-gray-700 dark:text-gray-200">
             <input
               type="checkbox"
-              className="h-3.5 w-3.5 rounded border-slate-600 bg-slate-900"
+              className="h-3.5 w-3.5 rounded border-gray-400 bg-white/70 dark:border-gray-600 dark:bg-gray-900"
               checked={hideZeros}
               onChange={(e) => setHideZeros(e.target.checked)}
             />
@@ -642,7 +652,7 @@ export default function FundingDifferences() {
           <div className="flex flex-wrap items-center justify-end gap-1.5">
             <div className="flex items-center gap-1.5">
               <select
-                className="h-8 sm:h-9 rounded-xl border border-slate-700 bg-slate-900 px-2 text-[10px] sm:text-[11px] text-slate-100"
+                className="h-8 sm:h-9 rounded-2xl border border-gray-300 bg-white/85 px-2 text-[10px] sm:text-[11px] text-gray-800 dark:border-gray-700 dark:bg-gray-900 dark:text-gray-100"
                 value={sortKey}
                 onChange={(e) => setSortKey(e.target.value)}
                 title="Sort by"
@@ -654,7 +664,7 @@ export default function FundingDifferences() {
                 ))}
               </select>
               <button
-                className="inline-flex items-center gap-1 rounded-xl border border-slate-700 bg-slate-900 px-2 h-8 sm:h-9 text-[10px] sm:text-[11px] text-slate-100 hover:bg-slate-800"
+                className="inline-flex items-center gap-1 rounded-2xl border border-gray-300 bg-white/85 px-2 h-8 sm:h-9 text-[10px] sm:text-[11px] text-gray-800 hover:bg-gray-100 dark:border-gray-700 dark:bg-gray-900 dark:text-gray-100 dark:hover:bg-gray-800"
                 onClick={toggleSortDir}
                 title="Toggle sort direction"
               >
@@ -667,16 +677,16 @@ export default function FundingDifferences() {
               </button>
             </div>
 
-            {/* View toggle (still uses emerald pill, but inside dark frame) */}
-            <div className="relative inline-flex items-center rounded-xl border border-slate-700 bg-slate-900 p-0.5">
+            {/* View toggle */}
+            <div className="relative inline-flex items-center rounded-2xl border border-gray-300 bg-white/85 p-0.5 dark:border-gray-700 dark:bg-gray-900">
               <button
                 onClick={() => setViewMode("list")}
-                className="relative px-2.5 py-1.5 text-[9px] sm:text-[10px] rounded-lg flex-1 text-center"
+                className="relative px-3 py-1.5 text-[9px] sm:text-[10px] rounded-2xl"
               >
                 {viewMode === "list" && (
                   <motion.div
                     layoutId="viewModePill"
-                    className="absolute inset-0 rounded-lg bg-emerald-400"
+                    className="absolute inset-0 rounded-2xl bg-emerald-400"
                     transition={{
                       type: "spring",
                       stiffness: 260,
@@ -688,8 +698,8 @@ export default function FundingDifferences() {
                   className={
                     "relative z-10 " +
                     (viewMode === "list"
-                      ? "text-slate-950 font-semibold"
-                      : "text-slate-400")
+                      ? "text-gray-900 font-semibold"
+                      : "text-gray-500 dark:text-gray-400")
                   }
                 >
                   List
@@ -697,12 +707,12 @@ export default function FundingDifferences() {
               </button>
               <button
                 onClick={() => setViewMode("cards")}
-                className="relative px-2.5 py-1.5 text-[9px] sm:text-[10px] rounded-lg flex-1 text-center"
+                className="relative px-3 py-1.5 text-[9px] sm:text-[10px] rounded-2xl"
               >
                 {viewMode === "cards" && (
                   <motion.div
                     layoutId="viewModePill"
-                    className="absolute inset-0 rounded-lg bg-emerald-400"
+                    className="absolute inset-0 rounded-2xl bg-emerald-400"
                     transition={{
                       type: "spring",
                       stiffness: 260,
@@ -714,8 +724,8 @@ export default function FundingDifferences() {
                   className={
                     "relative z-10 " +
                     (viewMode === "cards"
-                      ? "text-slate-950 font-semibold"
-                      : "text-slate-400")
+                      ? "text-gray-900 font-semibold"
+                      : "text-gray-500 dark:text-gray-400")
                   }
                 >
                   Cards
@@ -727,55 +737,47 @@ export default function FundingDifferences() {
 
         {/* Summary + error */}
         {error && (
-          <div className="mt-2 text-[11px] text-red-400 flex items-center gap-1.5">
+          <div className="mt-2 text-[10px] text-red-500 flex items-center gap-1.5">
             <Info className="h-3.5 w-3.5" />
             {error}
           </div>
         )}
 
-        <div className="mt-2.5 grid grid-cols-2 sm:grid-cols-5 gap-1.5 text-[10px] sm:text-[11px] text-slate-200">
-          <div className={`${CARD_DENSE} px-2 py-1.5 flex justify-between`}>
+        <div className="mt-2 grid grid-cols-2 sm:grid-cols-5 gap-1.5 text-[10px] sm:text-[11px] text-gray-700 dark:text-gray-200 px-2 pb-2">
+          <div className={`${cardTight} px-2 py-1.5 flex justify-between`}>
             <span>symbols</span>
-            <span className="font-mono">
-              {summary.total}
-            </span>
+            <span className="font-mono">{summary.total}</span>
           </div>
-          <div className={`${CARD_DENSE} px-2 py-1.5 flex justify-between`}>
+          <div className={`${cardTight} px-2 py-1.5 flex justify-between`}>
             <span>exchanges</span>
-            <span className="font-mono">
-              {summary.exchanges}
-            </span>
+            <span className="font-mono">{summary.exchanges}</span>
           </div>
-          <div className={`${CARD_DENSE} px-2 py-1.5 flex justify-between`}>
+          <div className={`${cardTight} px-2 py-1.5 flex justify-between`}>
             <span>avg spread /h</span>
-            <span className="font-mono text-emerald-300">
+            <span className="font-mono text-emerald-600 dark:text-emerald-300">
               {fmt.pct3(summary.avgSpread)}
             </span>
           </div>
-          <div className={`${CARD_DENSE} px-2 py-1.5 flex justify-between`}>
+          <div className={`${cardTight} px-2 py-1.5 flex justify-between`}>
             <span>all-neg</span>
-            <span className="font-mono">
-              {summary.allNeg}
-            </span>
+            <span className="font-mono">{summary.allNeg}</span>
           </div>
-          <div className={`${CARD_DENSE} px-2 py-1.5 flex justify-between`}>
+          <div className={`${cardTight} px-2 py-1.5 flex justify-between`}>
             <span>all-pos</span>
-            <span className="font-mono">
-              {summary.allPos}
-            </span>
+            <span className="font-mono">{summary.allPos}</span>
           </div>
         </div>
       </motion.div>
 
       {/* Content */}
       {initialLoading && (
-        <div className={`${CARD} p-4 text-center text-sm text-slate-300`}>
+        <div className={`${cardBase} p-3 text-center text-sm text-gray-600 dark:text-gray-200`}>
           Loading…
         </div>
       )}
 
       {!initialLoading && totalSymbols === 0 && (
-        <div className={`${CARD} p-4 text-center text-sm text-slate-300`}>
+        <div className={`${cardBase} p-3 text-center text-sm text-gray-600 dark:text-gray-200`}>
           No symbols match current filters.
         </div>
       )}
@@ -785,18 +787,16 @@ export default function FundingDifferences() {
           {viewMode === "list" ? (
             /* ---------- LIST VIEW ---------- */
             <motion.div
-              className={`${CARD} overflow-hidden`}
+              className={`${cardBase} overflow-hidden`}
               initial="hidden"
               animate="show"
               variants={{
                 hidden: {},
-                show: {
-                  transition: { staggerChildren: 0.01 },
-                },
+                show: { transition: { staggerChildren: 0.01 } },
               }}
             >
               {/* Header row (desktop) */}
-              <div className="hidden md:grid grid-cols-[2.7fr,2.4fr,1.1fr,1.1fr] gap-2 px-3 py-2 text-[11px] font-medium uppercase tracking-[0.16em] text-slate-500 bg-slate-900 border-b border-slate-800">
+              <div className="hidden md:grid grid-cols-[2.7fr,2.5fr,1.1fr,1.1fr] gap-2 px-3 py-2 text-[9px] font-medium uppercase tracking-[0.16em] text-gray-500 dark:text-gray-400 border-b border-gray-200 dark:border-gray-800 bg-white/70 dark:bg-gray-900">
                 <div>Ticker / exchanges</div>
                 <div>(short / long)</div>
                 <div>Spread APR</div>
@@ -810,43 +810,43 @@ export default function FundingDifferences() {
                   <motion.div
                     key={g.symbol}
                     variants={{
-                      hidden: { opacity: 0, y: 3 },
+                      hidden: { opacity: 0, y: 2 },
                       show: { opacity: 1, y: 0 },
                     }}
-                    className="group border-t border-slate-800 last:border-b last:rounded-b-2xl hover:bg-slate-900/80 transition-colors"
+                    className="group border-t border-gray-100 dark:border-gray-800 last:border-b hover:bg-gray-50/80 dark:hover:bg-gray-900/80 transition-colors"
                   >
                     {/* Desktop layout */}
-                    <div className="hidden md:grid grid-cols-[2.7fr,2.4fr,1.1fr,1.1fr] gap-2 px-3 py-2.5 text-[11px] items-center">
-                      {/* Symbol + exchanges */}
-                      <div className="flex flex-col gap-0.5">
+                    <div className="hidden md:grid grid-cols-[2.7fr,2.5fr,1.1fr,1.1fr] gap-2 px-3 py-2.5 text-[10px] items-center">
+                      <div className="flex flex-col gap-1">
                         <button
                           onClick={() => setActiveGroup(g)}
-                          className="text-[12px] font-semibold text-slate-50 hover:text-emerald-300 text-left"
+                          className="text-[11px] font-semibold text-gray-900 hover:text-emerald-600 text-left dark:text-gray-50 dark:hover:text-emerald-300"
                         >
                           {g.symbol}
                         </button>
                         <FixedRateChipRow items={g.items} max={4} />
                       </div>
 
-                      {/* SHORT / LONG pills */}
-                      <div className="flex flex-col gap-0.5">
+                      <div className="flex flex-col gap-1">
                         <div className="flex flex-wrap items-center gap-1.5">
-                          <div className={SHORT_PILL}>
+                          {/* short */}
+                          <div className="inline-flex items-center gap-1 px-2 py-1 rounded-2xl bg-red-500 text-white text-[9px]">
                             <span className="uppercase tracking-wide">
                               short
                             </span>
-                            <span className="font-mono text-[10px]">
+                            <span className="font-mono">
                               {String(g.best?.exchange).toLowerCase()}
                             </span>
                             <span className="font-mono">
                               {fmt.pct4(g.best?.rate)}/h
                             </span>
                           </div>
-                          <div className={LONG_PILL}>
+                          {/* long */}
+                          <div className="inline-flex items-center gap-1 px-2 py-1 rounded-2xl bg-emerald-500 text-slate-900 text-[9px]">
                             <span className="uppercase tracking-wide">
                               long
                             </span>
-                            <span className="font-mono text-[10px]">
+                            <span className="font-mono">
                               {String(g.worst?.exchange).toLowerCase()}
                             </span>
                             <span className="font-mono">
@@ -854,28 +854,27 @@ export default function FundingDifferences() {
                             </span>
                           </div>
                         </div>
-                        <div className="text-[9px] text-slate-500">
-                          venues: <span className="font-mono">{g.count}</span>
+                        <div className="text-[8px] text-gray-500 dark:text-gray-400">
+                          venues:{" "}
+                          <span className="font-mono">{g.count}</span>
                         </div>
                       </div>
 
-                      {/* Spread APR */}
                       <div className="flex items-center">
                         {spreadBadge(apySimple)}
                       </div>
 
-                      {/* Spread /h */}
                       <div className="flex items-center">
                         {spreadBadge(g.spread)}
                       </div>
                     </div>
 
-                    {/* Mobile layout */}
-                    <div className="md:hidden px-2.5 py-2.5 text-[10px] flex flex-col gap-1.25">
-                      <div className="flex items-center gap-1.5 justify-between">
+                    {/* Mobile stacked layout */}
+                    <div className="md:hidden px-2.5 py-2 flex flex-col gap-1.5 text-[9px]">
+                      <div className="flex items-center justify-between gap-2">
                         <button
                           onClick={() => setActiveGroup(g)}
-                          className="text-[11px] font-semibold text-slate-50 hover:text-emerald-300"
+                          className="text-[10px] font-semibold text-gray-900 hover:text-emerald-600 dark:text-gray-50 dark:hover:text-emerald-300"
                         >
                           {g.symbol}
                         </button>
@@ -883,18 +882,18 @@ export default function FundingDifferences() {
                       </div>
 
                       <div className="flex flex-wrap gap-1">
-                        <div className={SHORT_PILL}>
+                        <div className="inline-flex items-center gap-1 px-2 py-1 rounded-2xl bg-red-500 text-white text-[8px]">
                           <span className="uppercase">short</span>
-                          <span className="font-mono text-[9px]">
+                          <span className="font-mono">
                             {String(g.best?.exchange).toLowerCase()}
                           </span>
                           <span className="font-mono">
                             {fmt.pct4(g.best?.rate)}/h
                           </span>
                         </div>
-                        <div className={LONG_PILL}>
+                        <div className="inline-flex items-center gap-1 px-2 py-1 rounded-2xl bg-emerald-500 text-slate-900 text-[8px]">
                           <span className="uppercase">long</span>
-                          <span className="font-mono text-[9px]">
+                          <span className="font-mono">
                             {String(g.worst?.exchange).toLowerCase()}
                           </span>
                           <span className="font-mono">
@@ -905,7 +904,7 @@ export default function FundingDifferences() {
 
                       <FixedRateChipRow items={g.items} max={3} />
 
-                      <div className="flex justify-between text-[9px] text-slate-500">
+                      <div className="flex justify-between text-[8px] text-gray-500 dark:text-gray-400">
                         <span>Δ/h {fmt.pct4(g.spread)}</span>
                         <span>best {fmt.pct4(g.max)}/h</span>
                         <span>worst {fmt.pct4(g.min)}/h</span>
@@ -918,7 +917,7 @@ export default function FundingDifferences() {
           ) : (
             /* ---------- CARDS VIEW ---------- */
             <motion.div
-              className="grid grid-cols-1 sm:grid-cols-2 xl:grid-cols-3 gap-3"
+              className="grid grid-cols-1 sm:grid-cols-2 xl:grid-cols-3 gap-2.5"
               initial="hidden"
               animate="show"
               variants={{
@@ -939,59 +938,31 @@ export default function FundingDifferences() {
                   <motion.div
                     key={g.symbol}
                     variants={{
-                      hidden: { opacity: 0, y: 4 },
+                      hidden: { opacity: 0, y: 2 },
                       show: { opacity: 1, y: 0 },
                     }}
-                    whileHover={{ y: -2 }}
-                    className={`${CARD} shadow-md p-3 sm:p-3.5 flex flex-col gap-2`}
+                    whileHover={{ y: -1 }}
+                    className={`${cardBase} p-3 sm:p-3.5 flex flex-col gap-2`}
                   >
-                    <div className="flex flex-col gap-2 sm:flex-row sm:items-start sm:justify-between">
-                      <div className="min-w-0 flex-1">
-                        <div className="text-base sm:text-lg font-semibold leading-tight tracking-tight">
+                    <div className="flex items-start justify-between gap-2">
+                      <div>
+                        <div className="text-base sm:text-lg font-semibold leading-tight">
                           {g.symbol}
                         </div>
-                        <div className="mt-0.5 text-[10px] text-slate-400">
+                        <div className="mt-0.5 text-[9px] text-gray-600 dark:text-gray-400">
                           spread{" "}
-                          <span className="font-mono text-emerald-300">
+                          <span className="font-mono text-emerald-600 dark:text-emerald-300">
                             {fmt.pct4(g.spread)}
                           </span>
                           /h · venues{" "}
-                          <span className="font-mono">
-                            {g.count}
-                          </span>
-                        </div>
-
-                        <div className="mt-1.5 grid grid-cols-2 gap-1.5">
-                          <div className={`${CARD_DENSE} border-red-700 bg-red-900/40 px-2.5 py-1.5`}>
-                            <div className="text-[8px] uppercase tracking-wide text-red-300/90">
-                              short on
-                            </div>
-                            <div className="font-mono text-[11px] mt-0.5 text-red-100">
-                              {String(g.best?.exchange).toLowerCase()}
-                            </div>
-                            <div className="text-[9px] text-red-200 mt-0.5">
-                              {fmt.pct4(g.best?.rate)}/h
-                            </div>
-                          </div>
-                          <div className={`${CARD_DENSE} border-emerald-700 bg-emerald-900/30 px-2.5 py-1.5`}>
-                            <div className="text-[8px] uppercase tracking-wide text-emerald-300/90">
-                              long on
-                            </div>
-                            <div className="font-mono text-[11px] mt-0.5 text-emerald-100">
-                              {String(g.worst?.exchange).toLowerCase()}
-                            </div>
-                            <div className="text-[9px] text-emerald-200 mt-0.5">
-                              {fmt.pct4(g.worst?.rate)}/h
-                            </div>
-                          </div>
+                          <span className="font-mono">{g.count}</span>
                         </div>
                       </div>
-
                       <button
                         onClick={() => setActiveGroup(g)}
-                        className="w-full sm:w-auto inline-flex items-center justify-center gap-1.5 rounded-xl bg-emerald-400 text-slate-900 px-2.5 py-1.25 text-[10px] sm:text-[11px] font-semibold hover:bg-emerald-300"
+                        className="inline-flex items-center gap-1 rounded-2xl bg-emerald-400 text-gray-900 px-2.5 py-1 text-[9px] font-semibold hover:bg-emerald-300"
                       >
-                        <Percent className="h-3.5 w-3.5" />
+                        <Percent className="h-3 w-3" />
                         details
                         <span className="font-mono">
                           {fmt.pct2(apySimple)}
@@ -999,9 +970,36 @@ export default function FundingDifferences() {
                       </button>
                     </div>
 
+                    <div className="grid grid-cols-2 gap-1.5">
+                      {/* short */}
+                      <div className="rounded-2xl bg-red-500 text-white px-2.5 py-1.5">
+                        <div className="text-[8px] uppercase tracking-wide">
+                          short on
+                        </div>
+                        <div className="font-mono text-[10px] mt-0.5">
+                          {String(g.best?.exchange).toLowerCase()}
+                        </div>
+                        <div className="text-[9px] mt-0.5">
+                          {fmt.pct4(g.best?.rate)}/h
+                        </div>
+                      </div>
+                      {/* long */}
+                      <div className="rounded-2xl bg-emerald-500 text-gray-900 px-2.5 py-1.5">
+                        <div className="text-[8px] uppercase tracking-wide">
+                          long on
+                        </div>
+                        <div className="font-mono text-[10px] mt-0.5">
+                          {String(g.worst?.exchange).toLowerCase()}
+                        </div>
+                        <div className="text-[9px] mt-0.5">
+                          {fmt.pct4(g.worst?.rate)}/h
+                        </div>
+                      </div>
+                    </div>
+
                     <div>
                       <ZeroAnchorBar min={g.min} max={g.max} />
-                      <div className="mt-0.5 grid grid-cols-3 text-[8px] sm:text-[9px] text-slate-500">
+                      <div className="mt-1 grid grid-cols-3 text-[8px] text-gray-500 dark:text-gray-400">
                         <div>min {fmt.pct4(g.min)}/h</div>
                         <div className="text-center">0%/h</div>
                         <div className="text-right">
@@ -1010,10 +1008,12 @@ export default function FundingDifferences() {
                       </div>
                     </div>
 
-                    <div className="mt-1.5 flex flex-wrap gap-1">
+                    <div className="mt-1 flex flex-wrap gap-1">
                       {visible.map((it) => (
                         <RateChip
-                          key={String(it.exchange) + String(it.market_id)}
+                          key={
+                            String(it.exchange) + String(it.market_id)
+                          }
                           exchange={it.exchange}
                           rate={it.rate}
                         />
@@ -1022,7 +1022,7 @@ export default function FundingDifferences() {
 
                     {showToggle && (
                       <button
-                        className="mt-1.5 inline-flex items-center gap-1 self-start text-[9px] sm:text-[10px] rounded-md border border-slate-700 px-2 py-0.75 text-slate-300 hover:bg-slate-900"
+                        className="mt-1 inline-flex items-center gap-1 self-start text-[8px] rounded-2xl border border-gray-300 px-2 py-1 text-gray-600 hover:bg-gray-50 dark:border-gray-700 dark:text-gray-200 dark:hover:bg-gray-900"
                         onClick={() => toggleCard(g.symbol)}
                       >
                         {opened ? (
@@ -1050,7 +1050,7 @@ export default function FundingDifferences() {
       <AnimatePresence>
         {activeGroup && (
           <motion.div
-            className="fixed inset-0 z-50 flex items-center justify-center p-3 sm:p-5"
+            className="fixed inset-0 z-50 flex items-center justify-center p-3 sm:p-4"
             role="dialog"
             aria-modal="true"
             initial={{ opacity: 0 }}
@@ -1058,32 +1058,32 @@ export default function FundingDifferences() {
             exit={{ opacity: 0 }}
             onClick={() => setActiveGroup(null)}
           >
-            <div className="absolute inset-0 bg-black/60 backdrop-blur-sm" />
+            <div className="absolute inset-0 bg-black/50 backdrop-blur-sm" />
             <motion.div
-              className={`${CARD} relative w-full max-w-2xl shadow-2xl`}
+              className={`${cardBase} relative w-full max-w-2xl`}
               initial={{ y: 18, opacity: 0 }}
               animate={{ y: 0, opacity: 1 }}
               exit={{ y: 18, opacity: 0 }}
               onClick={(e) => e.stopPropagation()}
             >
-              <div className="flex items-center justify-between gap-3 px-4 sm:px-5 pt-3.5">
+              <div className="flex items-center justify-between gap-3 px-4 pt-3.5">
                 <div>
-                  <div className="text-[9px] uppercase tracking-[0.16em] text-slate-500">
+                  <div className="text-[8px] uppercase tracking-[0.16em] text-gray-500 dark:text-gray-400">
                     arbitrage opportunity
                   </div>
-                  <div className="text-xl sm:text-2xl font-semibold tracking-tight text-slate-50">
+                  <div className="text-xl sm:text-2xl font-semibold tracking-tight text-gray-900 dark:text-gray-50">
                     {activeGroup.symbol}
                   </div>
                 </div>
                 <button
-                  className="rounded-lg p-2 hover:bg-slate-900 text-slate-400"
+                  className="rounded-xl p-1.5 hover:bg-gray-100 text-gray-500 dark:hover:bg-gray-800 dark:text-gray-300"
                   onClick={() => setActiveGroup(null)}
                   aria-label="Close"
                 >
                   <X className="h-5 w-5" />
                 </button>
               </div>
-              <div className="px-4 sm:px-5 pb-4 sm:pb-5">
+              <div className="px-4 pb-4 sm:px-5 sm:pb-5">
                 <ArbPanel
                   symbol={activeGroup.symbol}
                   best={activeGroup.best}
@@ -1096,7 +1096,7 @@ export default function FundingDifferences() {
         )}
       </AnimatePresence>
 
-      <div className="mt-2 text-[9px] sm:text-[10px] text-slate-500">
+      <div className="mt-2 text-[8px] sm:text-[9px] text-gray-500 dark:text-gray-400">
         All values are indicative only and exclude fees, schedule
         misalignments, leg risk, and operational constraints.
       </div>

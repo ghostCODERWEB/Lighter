@@ -13,7 +13,7 @@ export default function App() {
     <ThemeProvider>
       <div className="font-sans min-h-screen bg-gray-50 dark:bg-gray-900 text-gray-900 dark:text-gray-100 flex flex-col">
         <Header />
-        <main className="flex-1 container mx-auto px-4 py-6 sm:px-8 sm:py-10">
+        <main className="flex-1 container mx-auto">
           <div className="bg-white dark:bg-gray-800 rounded-2xl shadow-md p-6">
             <Routes>
               <Route path="/" element={<FundingDifferences />} />
