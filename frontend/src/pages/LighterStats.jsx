@@ -56,8 +56,8 @@ export default function LighterStats() {
             try {
                 setError("");
                 const [sRes, eRes] = await Promise.all([
-                    fetch(`${API_BASE}/api/fees/onchain/summary`, { signal: abort.signal }),
-                    fetch(`${API_BASE}/api/fees/onchain/txs`, { signal: abort.signal }),
+                    // fetch(`${API_BASE}/api/fees/onchain/summary`, { signal: abort.signal }),
+                    // fetch(`${API_BASE}/api/fees/onchain/txs`, { signal: abort.signal }),
                 ]);
                 if (!sRes.ok || !eRes.ok) throw new Error(`HTTP ${sRes.status}/${eRes.status}`);
                 const sJson = await sRes.json();
